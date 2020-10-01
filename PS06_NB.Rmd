@@ -91,12 +91,7 @@ Assume that all of the assumptions of the linear regression model are satisfied.
 You are interested in estimating the sum of the parameters on $x_1$ and $x_2$; call this $\theta = \beta_1 + \beta_2$.  Show that $\hat{\theta} = \hat{\beta}_1 + \hat{\beta}_2$ is an unbiased estimator of $\theta$ where $\hat{\beta}_1$ and $\hat{\beta}_2$ are the OLS estimates of a regression of $x_1$, $x_2$, and $x_3$ on $y$.
 
 **Solution:**  
-\begin{align*}
-\hat{\theta} = & \hat{\beta}_1 + \hat{\beta}_2 \\
-& \text{Taking the expectation of both sides we get:} \\
-E(\hat{\theta}) = & E(\hat{\beta}_1) + E(\hat{\beta}_2) \\
-& \text{Since the assumptions of the linear regression model are satisfied, we know that $\hat{\beta_1}$ and $\hat{\beta_2}$ are unbiased estimators of $\beta_1$ and $\beta_2$.}  \\
-\end{align*}
+We know from the assumptions of the linear regression model and the previous question that the estimators of $\beta$ are unbiased. Therefore $\hat{\theta}$ is the sum of two unbiased estimators. That would make $\hat{\theta}$ an unbiased estimator of $\theta$. 
 
 
 ### Question 3
@@ -110,6 +105,9 @@ Where $E(\varepsilon | sales, sales^2) = E(\varepsilon ) = 0$
 a. Consider a model without the squared term, with $rd_i = \beta_1 + \beta_2 sales_i + \varepsilon_i^*$, where $\varepsilon_i^* = \beta_3 sales^2_i + \varepsilon_i$.  Show by taking the conditional expectation of $\varepsilon_i^*$ with respect to $sales$ that this model violates the assumption of mean independence when $\beta_3 \neq 0$.
 
 **Solution:** 
+\begin{align*}
+E[\varepsilon_i^*|sales] = & E[\beta_3 sales^2_i + \varepsilon_i |sales] \\
+\end{align*}
 
 b. Suppose we have the following estimates form the true model
 $$\widehat{rd} = 17.79 -327.48(sales) +261.26(sales^2)$$
