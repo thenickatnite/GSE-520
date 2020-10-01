@@ -1,0 +1,150 @@
+---
+title: 'GSE 520: Problem Set #1'
+author: 
+  - "Nick Brown"
+  - "Trevor Luenser"
+  - "Amy Ozee"
+output: html_document
+---
+
+### Question 1
+
+Consider the equation $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2$ 
+
+a. Add an additional variable $x_3$ multiplied by $\beta_3$ to the equation (write the entire expression below).
+
+>**Solution:**  
+$y = \beta_{0} + \beta_{1} x_1 + \beta_{2} x_2 + \beta_{3} x_3$
+
+b. Change the $\beta$'s in the equation above to $\alpha$'s (write the new expression below).
+
+>**Solution:**  
+$y = \alpha_{0} + \alpha_{1} x_1 + \alpha_{2} x_2 + \alpha_{3} x_3$
+
+### Question 2
+
+Consider the matrix
+\begin{align*} x = \left[
+  \begin{matrix}
+  3 & 1 & 1 \\
+  1 & 2 & -1 \\
+  2 & -1 & 4
+  \end{matrix} \right]
+\end{align*}
+
+a. Write the R code to create this matrix.  Call it `x' and use the command ``print(x)`` to show that you created it correctly.  
+
+>**Solution:** 
+>```{R}  
+x = matrix(c(3,1,2,1,2,-1,1,-1,4), nrow = 3, ncol = 3)  
+print(x)  
+```
+
+
+b. What is the inverse of the matrix above?  
+
+>**Solution:**  
+>```{R}
+solve(x)
+```
+
+c. Is the inverse of the transpose of this matrix equal to the transpose of the inverse of this matrix?
+
+>**Solution:**  
+>```{R}
+solve(t(x))
+t(solve(x))
+```
+Yes, they are equal.
+
+d. Prove that that the transpose of an inverse is equal to the inverse of the transpose (i.e., $(A^{-1})' = (A')^{-1}$).  You should use the align environment to show each step of your proof.
+
+>**Solution:**  
+By definition of inverse matrices, if there is an n x n matrix B such that 
+$$A'B = I$$ and $$BA' = I$$
+Therefore $B=(A')^{-1}$ Using the property of transposes that: $$(CD)' = D'C'$$  
+So combining those properties we get:
+\begin{align*}
+& A'(A^{-1})' = (A^{-1}A)' = I' = I \\
+= & (A^{-1})'A' = (AA^{-1})' = I' = I \\
+= & (A')^{-1} = (A^{-1})'
+\end{align*}
+Therefore, the transpose of an inverse is equal to the inverse of the transpose.
+
+### Question 3
+
+Consider the following matrix products,
+\begin{align*}
+(X'X) = \left[
+\begin{matrix}
+4 & 46 \\
+46 & 534
+\end{matrix} \right]
+\qquad 
+(X'Y)= \left[
+\begin{matrix}
+12.7 \\
+146.4
+\end{matrix} \right] 
+\end{align*}
+
+Use **R** to calculate the value of $(X'X)^{-1}X'Y$.
+
+>**Solution:**  
+>```{R}
+# First create matrix representing (X'X), call it y for simplicity.
+y = matrix(c(4,46,46,534), nrow = 2, ncol = 2)
+print(y)
+# Then create matrix representing (X'Y), call it z for simplicity
+z = matrix(c(12.7, 146.4), nrow = 2, ncol = 1)
+print(z)
+# Then multiply them together
+y %*% z
+```
+
+### Question 4
+
+Use the data ``airfare.RData`` to answer the following.  This data contains information on airlines routes in the US from 1997-2000.  In includes information like the average fare of the route and the distance of the route, as well as the fraction of flights on that route concentrated with a single carrier.
+
+a. What is the minimum flight distance in the data set?
+
+>**Solution:** 
+>```{R}
+load("~/Desktop/ECON 520/Data/airfare.RData")  
+min(data$dist)  
+```
+The minimum flight distance in the data set is 95 miles.
+
+b. What is the average fare in the data set?
+
+>**Solution:** 
+>```{R}
+mean(data$fare)
+```
+The mean fare is $178.80 (rounded).
+
+c. What is the average fare for 1998 in the data set?
+
+>**Solution:** 
+>```{R}
+mean(data$fare[data$year==1998])
+```
+The mean fare for flights in 1998 is $175.44 (rounded).
+
+d. Many airline routes are only served by a single carrier, giving them potentially large market power to control prices.  What fraction of the markets in the data set have more than 90% of flights served by a single carrier?
+
+>**Solution:** 
+>```{R}
+mkts.a = sum(data$bmktshr>0.9)
+print(mkts.a)
+
+>mkts.b = sum(data$bmktshr>0)
+print(mkts.b)
+
+>mkts.a/mkts.b
+```
+>Or you can approach this way:
+>```{R}
+mean(data$bmktshr>.90)
+```
+>The fraction of the markets in the data set that have more than 90% of flights served by a single carrier is 437/4596.

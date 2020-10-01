@@ -1,0 +1,145 @@
+---
+title: 'GSE 520: Problem Set #3'
+author: 
+  - Nick Brown
+  - Amanda Walker
+output: html_document
+---
+
+### Question 1
+
+Airlines routinely sell more tickets than there are seats available on their airplanes.  When more people show up than there are seats on the plane, the airline has to offer the excess passengers vouchers to take another flight.  Let $q$ denote the quantity of tickets oversold for a flight, i.e. tickets sold minus capacity.  Let $v$ denote the number of vouchers that must be offered for a particular flight.  Assume that $E(v | q) = q/2$, which is the expected number of vouchers they will have to offer if they oversell the flight by $q$.  On a typical day, the airline operates 43.75% flights sold at capacity, 31.25% flights oversold by (1), 18.75% flights oversold by (2), and 6.25% flights oversold by (3).
+
+Use the law of iterated expectations to find $E(v)$, which is the expected number of vouchers the airline will have to offer *for a typical flight* on a typical day. (Hint: the law of iterated expectations say $E(v) = E_{q} [ E (v | q)]$)
+
+**Solution:**  
+$E(v) = E_{q} [ E (v | q)]$  
+
+$E(v | q) = q/2$  
+
+\begin{align*}
+E(v) = & E_{q} [q/2]\\
+= & .4365(0/2) + .3125(1/2) + .1875(2/2) + .0625(3/2)\\
+\end{align*}
+
+```{R}
+expected_v = .4375*(0/2) + .3125*(1/2) + .1875*(2/2) + .0625*(3/2)
+expected_v
+```
+The expected number of vouchers the airline will have to offer for a typical flight on a typical day is $0.4375$.
+
+### Question 2
+
+The data set in CEOSAL2 contains salary information on chief executive officers for U.S. corporations.   In addition to salary the data contain other information on the CEO and the CEO's company.  For example, CEO tenure, firm sales, firm market value, etc.  Consider predicting CEO $salary$ ($y$) with a single variable $x$ in the dataset using the prediction function $\hat{y} = a + b x$.  Your objective is to choose the variable $x$ that you think explains as much of the variation in $salary$ as possible.  
+
+a. What variable did you choose for $x$?
+
+**Solution:**  
+The variable we chose for $x$ is profits.  
+```{R}
+load("~/Desktop/ECON 520/Data/ceosal2.RData")
+```
+
+b. Using ```R``` and the formulas we derived in class, predict $y$ with $x$.  How much of the variation in $salary$ are you able to explain with $x$?  Report your calculation of $a$, $b$, the $SST$, the $SSE$, and the $R^2$.
+
+**Solution:**  
+```{R}
+b_profits = cov(data$salary, data$profits)/var(data$profits)
+b_profits
+a_profits = mean(data$salary) - b_profits*mean(data$profits)
+a_profits
+SST = sum( (data$salary - mean(data$salary))^2)
+SST
+SSE = sum( (data$salary - (a_profits + b_profits*data$profits))^2)
+SSE
+R_squared = 1 - SSE/SST
+R_squared
+```
+
+We are able to explain 15% of the variation of ceo salary using the $x$ variable profits.
+
+c. Instead, define $y=\ln(salary)$ and using the same formulas, predict $y$ with $x$.  In what sense are you better able to predict $salary$?
+  
+**Solution:** 
+```{R}
+ln_b_profits = cov(data$lsalary, data$profits)/var(data$profits)
+ln_b_profits
+ln_a_profits = mean(data$lsalary) - b_profits*mean(data$profits)
+ln_a_profits
+ln_SST = sum( (data$lsalary - mean(data$lsalary))^2)
+ln_SST
+ln_SSE = sum( (data$lsalary - (a_profits + b_profits*data$profits))^2)
+ln_SSE
+ln_R_squared = 1 - SSE/SST
+ln_R_squared
+```
+Same R Squared however the SST and SSE were smaller due to the log transformation of the variable.
+
+
+### Question 3
+
+Using the same data set as Question 2, next consider predicting $\ln(salary)$, using the linear prediction function $\ln(salary) = a + b x$, except now $x$ does not have to be a single variable in the data set.  Create $x$ as a composite function of the variables in the data, for example you might have $x = .1 age -.05 ceoten$.  You can make any crazy function for $x$ to use in your prediction function to try and get the highest R-squared you possibly can.  (You might not get a full score for this question if other students do substantially better than your group)
+
+a. What variable did you choose for $x$?
+
+**Solution:**  
+```{R}
+x = data$profits + data$comten + data$college + data$grad + data$ceoten + data$sales + 
+  data$mktval + data$age + data$ceotensq
+```
+
+
+b. What is the model fit you were able to achieve with the variable you created. How does your model fit compare to your answer in Question 2, Part C above?
+
+**Solution:**  
+```{R}
+ln_b = cov(data$lsalary, x)/var(x)
+ln_a = mean(data$lsalary) - ln_b*mean(x)
+ln_SST = sum( (data$lsalary - mean(data$lsalary))^2)
+ln_SSE = sum( (data$lsalary - (ln_a + ln_b*x))^2)
+ln_R_squared = 1 - ln_SSE/ln_SST
+ln_R_squared
+```
+The model fit improved by 3% from 15.5% to 18.9%.
+
+### Question 4
+
+a. Consider the prediction function $\hat{y}_i = a$.  Given a sample $y = \{y_1,y_2,\ldots,y_n\}$, show how to use this data to find the value of $a$ that minimizes the prediction error (i.e., what value of $a$, a function of the data makes $\sum_{i=1}^n (y_i -\hat{y}_i)^2$ as small as possible.)
+
+**Solution:**  
+We know that $\hat{y}_i = a$ so to find the value of $a$ that minimizes the prediction error we need to first set up the SSE:
+\begin{align*}
+SSE = & \sum_{i=1}^{n}(y_{i}-a)^{2}\\
+\end{align*}  
+Then we need to take the partial derivative of SSE, with respect to $a$, and set it equal to 0 to find the minimum value:  
+\begin{align*}
+\dfrac{\partial SSE}{\partial a} = & -2 \sum_{i=1}^{n}(y_{i}-a)\\
+0 = & \sum_{i=1}^{n}(y_{i}-a)\\
+0 = & \sum_{i=1}^{n}(y_{i}) - n*a\\
+n*a = & \sum_{i=1}^{n}(y_{i})\\
+a = & \frac{1}{n} \sum_{i=1}^{n}(y_{i})\\
+\end{align*}
+The value of $a$ that minimizes the SSE is $\bar{y}$, or the sample mean of $y$.  
+
+b. Consider the prediction function $\hat{y}_i = b x_i$.  Given a sample $y = \{y_1,y_2,\ldots,y_n\}$ and $x = \{x_1,x_2,\ldots,x_n\}$, show how to use this data to find the value of $b$ that minimizes the prediction error (i.e., what value of $b$, a function of the data makes $\sum_{i=1}^n (y_i -\hat{y}_i)^2$ as small as possible.)
+
+**Solution:**  
+We have the prediction function $\hat{y}_i = b x_i$. So our SSE function looks like:
+\begin{align*}
+SSE = & \sum_{i=1}^n (y_i - bx_i)^2\\
+\end{align*}  
+Next, we need to take the partial derivative of the SSE with respect to $b$:
+\begin{align*}
+\dfrac{\partial SSE}{\partial b} = & -2 \sum_{i=1}^{n}x_i(y_i - bx_i)\\
+\end{align*}  
+Then to find the minimum, we need to set the SSE equal to zero:
+\begin{align*}
+0 = & -2 \sum_{i=1}^{n}x_i(y_i - bx_i)\\
+= & \sum_{i=1}^{n}x_i(y_i - bx_i)\\
+= & \sum_{i=1}^{n}x_i(y_i) - b\sum_{i=1}^{n}x_i(x_i)\\
+b = & \frac{\sum_{i=1}^{n}(x_i)(y_i)}{\sum_{i=1}^{n}x_i(x_i)}\\
+b = & \frac{\sum_{i=1}^{n}(x_i)(y_i)}{\sum_{i=1}^{n}x_i^2}\\
+\end{align*}
+
+
+

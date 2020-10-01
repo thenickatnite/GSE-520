@@ -1,0 +1,235 @@
+---
+title: 'GSE 520: Problem Set #5'
+author: 
+  - "Nick Brown"
+  - "John Giacinto"
+  - "Adam Gockel"
+output: html_document
+---
+
+### Question 1
+
+Given the data vector $y$ and the data matrix $X$ (which includes a column of ones).  Let $b$ be the least squares estimate of $\beta$ for the relationship $y = X \beta + \varepsilon$, where $\varepsilon$ is a vector of disturbances.  Prove the following relationships.
+
+a. Define $e$ as the vector of residuals, such that $e = y - Xb$.  Show that $\sum_i e_i=0$. (Hint: rely on the first order condition of the SSE with respect to the intercept)
+
+>**Solution:**  
+$$\sum_{i=1}^{n}e_i = 0$$
+$$ SSE = \sum_{i=1}^{n}(e_i)^{2} = \sum_{i=1}^{n}(y_i - X_i b)^{2}$$
+\begin{align*}
+\dfrac{\partial SSE}{\partial b}= & -2 \sum_{i=1}^{n}X_i (y_i - X_i b) \\
+0 = & \sum_{i=1}^{n}X_i (y_i - X_i b) \\
+0 = & \sum_{i=1}^{n}(e_i) \\
+\end{align*}
+
+
+b. Define $\overline{x}$ as a $K \times 1$ vector which contains the mean for each column of $X$.  Let $\overline{y}$ be the mean of $y$.  Show that the result above also implies $\overline{y} = \overline{x}'b$. (Hint: rely on your results from part (a) to prove this)
+
+>**Solution:**  
+From the last solution we found $\sum_{i=1}^{n}e_i = 0$. Using that result:
+\begin{align*}
+\sum_{i=1}^{n}e_i = & 0 \\
+\sum_{i=1}^{n}(y_i - X_i b) = & 0 \\
+\sum_{i=1}^{n}y_i - b \sum_{i=1}^{n}X_i = & 0 \\
+\frac{1}{n}(\sum_{i=1}^{n}y_i - b \sum_{i=1}^{n}X_i) = & \frac{1}{n}\times 0 \\
+\frac{1}{n}\sum_{i=1}^{n}y_i = & \frac{1}{n} \times b \sum_{i=1}^{n}X_i \\
+\overline{y} = & \overline{x}'b \\
+\end{align*}
+
+
+
+### Question 2
+
+Suppose we would like to estimate the production function 
+$$y_i = \beta_1x_i^{\beta_2}g_i^{\beta_3}h_i^{\beta_4}e^{\varepsilon_i}$$
+Where $e$ is the exponential function.  Describe how the parameters of this function can be estimate using ordinary least squares under the restriction of constant returns to scale, (i.e. $\beta_2+\beta_3+\beta_4=1$).
+
+>**Solution:**  
+To use ordinary least squares to estimate the parameters of this function, you would first have to take the natural log of both sides:
+$$ln(y_i) = ln(\beta_1) + \beta_2 ln(x_i) + \beta_3 ln(g_i) + \beta_4 ln(h_i) + \varepsilon_i$$
+Then you would have to put $\beta_3$ and $\beta_4$ in terms of $\beta_2$. After doing this you and replacing $\beta_3$ and $\beta_4$ you are left with:
+$$ln(y_i) = ln(\beta_1) + \beta_2 ln(x_i) + (1- \beta_2 - \beta_4) ln(g_i) + (1 - \beta_2 - \beta_3) ln(h_i) + \varepsilon_i$$
+Distribute the coefficients through and get:
+$$ln(y_i) = ln(\beta_1) + \beta_2 ln(x_i) + (ln(g_i) - \beta_2 ln(g_i) - \beta_4 ln(g_i)) +  (ln(h_i) - \beta_2 ln(h_i) - \beta_3 ln(h_i)) + \varepsilon_i$$
+Combine like terms:
+$$ln(y_i) = ln(\beta_1) + \beta_2 (ln(x_i) - ln(g_i) - ln(h_i)) + ln(g_i) + ln(h_i) -  \beta_3 ln(h_i) - \beta_4 ln(g_i) + \varepsilon_i$$
+Subtracting the $ln(g_i)$ and $ln(h_i)$ from both sides:
+$$ln(y_i) - ln(g_i) - ln(h_i) = ln(\beta_1) + \beta_2 (ln(x_i) - ln(g_i) - ln(h_i)) -  \beta_3 ln(h_i) - \beta_4 ln(g_i) + \varepsilon_i$$
+Setting $y^* = ln(y_i) - ln(g_i) - ln(h_i)$ and $x^* = (ln(x_i) - ln(g_i) - ln(h_i))-  \beta_3 ln(h_i) - \beta_4 ln(g_i)$ we are left with:
+$$y^* = \beta_1 + \beta_2 (x^*) + \varepsilon$$
+
+### Question 3
+
+We are interested in estimating the influence of $x$ on $y$.  Consider the bivariate regression model 
+$$y_i = \beta_0 + \beta_1 x_i + \varepsilon_i$$  
+We assume that all of the assumptions of the linear regression model are satisfied.  We collect data for 4 individuals.  Define the matrix $X$ as a 4 by 2 matrix, where row $i$ is defined as $x'_i = [1 \quad x_i]$.   $Y$ is a column vector with $y_i$ as the $i^{th}$ element.  In the data we observe
+\begin{align*}
+(X'X) = \left[
+\begin{matrix}
+4 & 46 \\
+46 & 534
+\end{matrix} \right] 
+\qquad 
+(X'Y)= \left[
+\begin{matrix}
+12.7 \\
+146.4
+\end{matrix} \right] 
+\end{align*}
+Use these values to estimate $\beta_0$ and $\beta_1$.
+
+>**Solution:**  
+We know that b is an estimator for $\beta$.
+$$b = (X'X)^{-1} (X'Y)$$
+Using R we can find the value of b since we know $(X'X)$ and $(X'Y)$:
+>```{R}
+# represent X'X as x and X'Y as y for simplicity
+x = matrix(c(4,46,46,534), ncol = 2, nrow = 2)
+x
+y = matrix(c(12.7, 146.4), ncol = 1, nrow = 2)
+y
+b = solve(x) %*% y
+b
+```
+>So we estimate that $\beta_0 = 2.37$ and $\beta_1 = 0.07$ based off the values of $b$.
+
+
+
+### Question 4
+
+In Problem Set 2, Question 6(c) you were asked to interpret a demand equation for organic apples.  This equation was estimated using OLS with the dataset ```apple.RData```.  Take this data and reproduce these numbers using the matrix formula $b = (X'X)^{-1}X'Y$ (you must create the corresponding $X$ and $Y$ matrices and apply the formula).   Confirm your results by using \textsf{R}'s built in \textsf{lm} function.
+
+>**Solution:**  
+>```{R}
+# Get the coefficients using the matrix method
+load("~/Desktop/ECON 520/Data/apple.RData")
+data = data[! is.na(data$ecolbs),]
+n = nrow(data)
+X =cbind(rep(1,n), data$educ, data$regprc, data$ecoprc, data$educ * data$ecoprc)
+Y = data$ecolbs
+b = solve(t(X) %*% X) %*% (t(X) %*% Y)
+b
+
+# use the 'lm' function to confirm
+lm(ecolbs ~ educ + regprc + ecoprc + (educ*ecoprc), data = data)
+```
+
+
+### Question 5
+
+Let $X$ be a $n \times K$ matrix that includes a column of ones.  Let $Z$ also be a matrix formed by concatenating the column vectors $Z = \left[ z_1 \quad z_2 \quad z_3 \right]$.  In words, explain what results from $PZ$, where $P$ is the projection matrix of $X$, making sure to explain the resulting dimension and provide the interpretation of the values.
+
+>**Solution:**  
+$PZ$ represents a projection matrix that creates prediction values of $Z$ using the linear combinations of the columns in $X$. The values in $PZ$ are the values of $Z$ that can be predicted using the values of $X$, unless $X=Z$ the predicted values will not be equal to the actual values of $Z$. The dimensions of $PZ$ will be equal to those of $Z$. 
+
+
+### Question 6
+
+While I was watching ESPN classic last night I collected data on the number of points scored for 5 players.  The observed points where 
+\begin{align*}
+\left[\begin{matrix} 11 & 11 & 15 & 7 & 26 \end{matrix} \right]
+\end{align*}
+Next I was interested in seeing if the individual's draft order could predict points.  Lower draft numbers should indicate better players.
+
+I estimated the equation
+$$point_i = \beta_1 + \beta_2 draft_i + \varepsilon_i$$
+where $draft_i$ was the draft number of player $i$.
+
+I got the following estimates and R-squared from my regression
+\begin{align*}
+\widehat{points} = & 18.894 - 0.207(draft) \\
+\text{R-Squared: } & 0.33
+\end{align*}
+
+a. What was the average draft number of the 5 players I was watching?
+
+>**Solution:**  
+To get the average daraft number, we need to first find the average points.
+>```{R}
+avg_pts = mean(c(11,11,15,7,26))
+avg_pts
+```
+>Then we can set plug in the average points for the points calue in the regression estimates equation and solve for the average draft variable:
+\begin{align*}
+14 = & 18.894 - .207(draft) \\
+.207(draft) = & 18.894 - 14 \\
+draft = & \frac{4.894}{.207} \\
+= & 23.6425 \\
+\end{align*}
+The average draft pick position would be 23.6425 (24 if rounded up since there are no fractional draft picks).  
+
+b. What was my adjusted R-squared?
+
+>**Solution:**  
+Adjusted R-squared is demonstrated by this equation:
+$$Adj-R^{2} = 1 - \frac{\frac{\sum_{i=1}^{n}e{_i}^{2}}{(n-K)}}{\frac{\sum_{i=1}^{n}(y_i-\bar{y})^{2}}{(n-1)}}$$
+Or:
+$$Adj-R^{2} = 1 - ((1-R^{2})*\frac{(n-1)}{(n-K)})$$
+In this problem $R^{2}=0.33$, $n=5$ and $K = 2$.
+So:
+$$Adj-R^{2} = 1 - ((1-0.33)*\frac{(5-1)}{(5-2)})$$
+So the $Adj-R^{2} = 0.11$.
+
+### Question 7
+
+Pick one of the datasets in the data folder that sounds interesting.  Pick a variable as your dependent variables and pick 3 or 4 explanatory variables.  
+
+a. What data set did you pick and what did you pick for your dependent variables and explanatory variable?
+
+>**Solution:**  
+We chose the dataset "Car". The dependent variable is "price", which is the vehicle price in \$1000's. The explanatory variables are "cost" (operating cost per month), "electric" (1 if electric car, 0 otherwise), and "highperf" (1 if high performance, 0 otherwise).
+
+b. Estimate a linear regression model with these variables and report your results in equation form along with the R-squared. Use a format similar to how I presented the estimation results for question 6 above.
+
+>**Solution:**  
+>```{R}
+load("~/Desktop/ECON 520/Data/Car.RData")
+data = data[! is.na(data$price),]
+n = nrow(data)
+X =cbind(rep(1,n), data$cost, data$electric, data$highperf)
+Y = data$price
+b = solve(t(X) %*% X) %*% (t(X) %*% Y)
+b
+
+mod = lm(price ~ cost + electric + highperf, data = data)
+summary(mod)$r.squared
+```
+>We got the following estimates and R-squared from our regression
+\begin{align*}
+\widehat{price} = & 38.6235 - 0.1637(cost) + 8.1281(electric) + 0.1060(highperf) \\
+\text{R-Squared: } & 0.10
+\end{align*}
+
+
+c. Comment on your results.  Quantitatively describe some of the marginal effects, i.e., "if $x$ increases by 1 unit then $y$ increases by ...".  Do all of the marginal effects have an intuitive sign?  Are any of the marginal effects surprisingly large? Are any of the marignal effect economically meaningless?
+
+>**Solution:**  
+If a car is electric, then the price rises by $8.13 thousand which makes sense. Electric cars are a new technology, so you would expect them to be more expensive than gas powered vehicles. The other two variables, cost and highperf, have smaller marginal effects. Both signs are in the direction you would expect, if a car costs more to operate per month you may expect the price to be lower to compensate. If a car is high performance, you would expect it to be more expensive than a car that is low performance.
+
+### Question 8
+
+Repeat Question 7 but with a different dataset.
+
+>**Solution:**  
+We chose the data set "mlb1". The dependent variable is "salary", the 1993 season salary for a player. The explanatory variables are "years" (number of years in the MLB), "hruns" (number of homeruns hit by that player up to this point), and "yrsallst" (the number of years the player was an all-star).
+
+>```{R}
+load("~/Desktop/ECON 520/Data/mlb1.RData")
+data = data[! is.na(data$salary),]
+n = nrow(data)
+X =cbind(rep(1,n), data$years, data$hruns, data$yrsallst)
+Y = data$salary
+b = solve(t(X) %*% X) %*% (t(X) %*% Y)
+b
+
+>mod = lm(salary ~ years + hruns + yrsallst, data = data)
+mod
+summary(mod)$r.squared
+```
+We got the following estimates and R-squared from our regression
+\begin{align*}
+\widehat{salary} = & 649299 + 19365(years) + 7086(hruns) + 206092(yrsallst) \\
+\text{R-Squared: } & 0.43
+\end{align*}
+
+>For each year a player is an all-star, their salary increases by $206,092. The sign and magnitude of this coefficient seems right, if a player is good enough to be an all-star you would expect their salary to be higher. The sign of the coefficients for the other two variables seem correct too. If a player has been in the MLB for a while, they are good enough to stick around and would have a higher salary. Rookies are also likely to make less as they are an unknown quantity. The sign seems correct for the home runs variable, but its magnitude seems low at first glance. However, a player is likely to have more career home runs than the number of years played or years as an all-star. Therefore the magnitude has to be smaller, since players are likely to have more. 

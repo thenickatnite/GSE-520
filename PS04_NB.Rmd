@@ -1,0 +1,157 @@
+---
+title: 'GSE 520: Problem Set #4'
+author: 
+  - "Nick Brown"
+  - "Amy Ozee"
+  - "Amanda Walker"
+output: html_document
+---
+
+### Question 1
+
+a. True or False.  The regression $y_i =  \beta_1 + \beta_2 sin(x_i) + \varepsilon_i$ violates the linearity assumption of the classical linear regression model.
+
+>**Solution:**  
+False. The linearity assumption hold with this equation.
+
+b. Suppose we would like to estimate the production function  $$y_i = \beta_1x_i^{\beta_2}g_i^{\beta_3}h_i^{\beta_4}e^{\varepsilon_i}$$ Where $e$ is the exponential function.  Can this function be made to satisfy the linearity assumption?
+
+>**Solution:**  
+You can take the natural log of both sides of the initial equation and be left with:
+$$ln(y_i) = ln(\beta_1) + \beta_2 ln(x_i) + \beta_3 ln(g_i) + \beta_4 ln(h_i) + \varepsilon_i$$
+The linearity of this transformed equation should hold since $ln(\beta_1)$ is equal to a new $\beta_1$.
+
+
+### Question 2
+
+A researcher is interested in studying if more developed countries (i.e. countries with higher GDP) have fewer deaths when natural disasters occur compared to less developed countries.  The authors hypothesize that more developed countries will experience fewer deaths because higher income means a higher demand for safety and a better underlying social/economic fabric.  They collect data from 3,893 natural disasters.  The table below shows the summary statistics of their data.
+
+Variable | Mean | Standard Deviation
+-------  |-----| -----------------
+$\ln$(number of killed) | 3.213	 | 1.821 
+$\ln$(GDP per captia) | 8.335 	| 1.023 
+
+The authors are interested in estimating the linear regression model 
+\begin{align*}
+\ln(killed) = \beta_0 + \beta_1 \ln(GDP) + \varepsilon
+\end{align*}
+
+a. The type of disaster, for example, hurricane or earthquake, likely also has an impact on the number of deaths.  Where does the type of disaster show up in the equation above?  What must be true about the relationship between the type of disaster and GDP to satisfy the set of assumptions of the linear regression model. Why?
+  
+>**Solution:**  
+The type of disaster shows up in the $\varepsilon$ term, as does any other variable that may affect the dependent variable. There must be no linear relationship between the GDP variable and type of disaster to satify assumption 2: Full Rank of X. The GDP variable must not be informative about the $\varepsilon$ in order to satisfy Assumption 3: Mean Independence. If assumption 3 is satified, this implies the $Cov(x_{ik}, \varepsilon_{j}) = 0$ which is a useful property for regression. The $\varepsilon$ term must also be non-correlated with other $\varepsilon$ terms. 
+
+
+b. The authors estimate the value of $\beta_1$ and get a value of $-0.514$.  Literally, what does this value mean.
+
+>**Solution:**  
+The value of $\beta_1$ represents the percentage change in number of killed, given a 1\% increase in GDP per capita. So in this specific case, a 1% increase in GDP per capita would decrease the percentage of number of killed by $0.514\%$.
+
+
+c. If the authors used least squares to estimate $\beta_1$ and $\beta_0$, what value did they get for $\beta_0$. (Use the information above you have enough information to figure this out.)
+
+>**Solution:**  
+\begin{align*}
+ln(people killed) = & \beta_0 + \beta_1(ln(GDP per capita)) + \varepsilon\\
+\end{align*}  
+Plugging in the mean values for ln(people killed) and ln(GDP per capita), we get
+\begin{align*}
+3.213 = & \beta_0 + -0.514(8.335)\\
+\beta_0 = & 3.214 + 0.514(8.335)\\
+\beta_0 = & 7.497\\
+\end{align*}  
+Therefore the value of \beta_0 (or the intercept) is 7.497.
+
+d. In the author's data set, they observe multiple natural disasters in the same country.  Which of the assumptions in the linear regression model does this likely violate?
+  
+>**Solution:**  
+Observing multiple national disasters in the same country would likely violate the linear regression model assumption of non-autocorrelation. If there are multiple disasters in the same country, the disasters are likely to be correlated with each other.
+
+### Question 3
+
+Suppose that $X$ is a random variable that takes value $-1$ with probability $0.5$ and $1$ with probability $0.5$.  $Y$ is a random variable that equals $0$ if $X=-1$. If $X=1$ then $Y$ takes value $-1$ with probability $0.5$ and $1$ with probability $0.5$.
+
+a. Does $Y$ depend on $X$?
+
+>**Solution:**  
+Yes, the outcome of $Y$ is directly dependent upon what the value of $X$ is. We know that $Y$ is $0$ when $X=-1$ and can be $-1$ or $1$ if $X=1$, but to determine $Y$ we need to know $X$.
+
+
+b.  Find $E(X)$ and $E(Y)$
+
+>**Solution:**  
+>```{R}
+expected_x = .5*(-1) + .5*(1)
+expected_x
+expected_y = .5*(0) + .5*(.5*(-1) + .5*(1))
+expected_y
+```
+$E(X) = 0$ and $E(Y) = 0$.
+
+c. Is $Y$ mean independent of $X$?, i.e. Prove or disprove that $E(Y) =,\neq E(Y | X)$. True or False.  If two variables are mean independent then the two variables are completely independent.
+
+>**Solution:**  
+$$E(Y) = 0$$
+\begin{align*}
+E(Y | X) = & E(Y | x = -1) + E(Y | x = 1)\\
+= & 0 + (.5(-1) + .5(1))\\
+= & 0\\
+\end{align*}  
+Therefore $E(Y) = E(Y | X)$. False. If two variables are mean independent, that means they are linearly independent, but not completely independent. 
+
+d. What is $Cov(Y,X)$? True or False.  If the covariance of two variables is zero then the two variables are completely independent.
+
+>**Solution:**  
+\begin{align*}
+Cov(Y,X) = & E[(Y - E(Y))(X -E(X))]\\
+= & E[(Y - 0)(X - 0)]\\
+= & E[(Y)(X)]\\
+\end{align*}  
+
+>The $Cov(Y,X) = E[(Y)(X)]$ which is equal to $0$.  
+Since we determined mean independence between the two variables, this implies the $Cov(Y,X)=0$.
+If the covariance of two variables is zero, this implies they have no linear relationship, so they would be linearly independent. This does not mean they are completely independent. So false.
+
+### Question 4
+
+Suppose that pairs of $(X,Y)$ occur with the following values $(-1,0)$, $(0,1)$, and $(1,0)$ each with probability 1/3.
+
+a. Does $Y$ depend on $X$?
+
+>**Solution:**  
+No, it does not appear that $Y$ depends on $X$. If you were to plot the points, a clear linear relationship between the three pairs does not show itself.
+
+b. Find $E(X)$ and $E(Y)$
+
+>**Solution:**  
+>```{R}
+expected_x = 1/3*(-1) + 1/3*(0) + 1/3*(1)
+expected_x
+expected_y = 1/3*(0) + 1/3*(1) + 1/3*(0)
+expected_y
+```
+$E(X) = 0$ and $E(Y) = \frac{1}{3}$.
+
+
+c. Show that $Y$ is not mean independent of $X$, i.e. what is $E(Y | X=-1)$ compared to $E(Y | X=0)$?
+
+>**Solution:**  
+$E(Y | X=-1) = 0$ and $E(Y | X=0) = 1$.
+Thus the expected value of $Y$ changes upon the value of $X$. Thus $Y$ is not mean independent of $X$.
+
+d. What is $Cov(Y,X)$? True or False.  If the covariance of two variables is zero then the two variables are mean independent.
+
+>**Solution:**  
+\begin{align*}
+Cov(Y,X) = & E[(Y - E(Y))(X -E(X))]\\
+= & E[(Y - (1/3) )(X - 0)]\\
+= & E[(Y-(1/3) )(X)]\\
+\end{align*} 
+
+>```{r}
+1/3*((-1)*(0-1/3) + (0)*(1-1/3) + (1)*(0-1/3))
+```
+Cov(Y, X) = 0.
+
+>False. If the covariance of two variables is zero, then the two variables are not mean independent. 
+
