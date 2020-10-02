@@ -44,12 +44,15 @@ So we can conclude that $\widehat{Y}$ is equal to $\widehat{Y}^*$.
 
 c. Finally conclude by showing that given your findings above, the two regressions have the same predicted values, they will also have the same R-squared, that is you are proving the very important and intuitive result that any linear transformation of the data does not lead to an improved fit of the outcome variable. (note this result applies to linear transformations, i.e., non-linear transformations, like include log and squared terms may be very effective in increasing R-squared.)
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
-SSR = & \sum_{i=1}^{n}(\widehat{y_i} - \bar{y})^{2} \\
-SST = & \sum_{i=1}^{n}(y_i - \bar{y})^2 \\
-R^{2} = & \frac{SSR}{SST} \\
-= & \frac{\sum_{i=1}^{n}(\widehat{y_i} - \bar{y})^{2}}{\sum_{i=1}^{n}(y_i - \bar{y})^2} \\
+R^{2} = & 1 - \frac{SSE}{SST}\\
+R^2 = & 1 - \frac{\sum_{i=1}^n (y_i - \hat y_i)}{\sum_{i=1}^n (y_i - \bar y)}\\
+R^2 = & 1 - \frac{Y - \widehat Y}{Y - \overline Y}\\
+\end{align*}
+Also from part b, $\widehat Y$ = $\widehat Y^{*}$. Therefore,
+\begin{align*}
+1 - \frac{Y - \widehat Y}{Y - \overline Y} = & 1 - \frac{Y - \widehat Y^{*}}{Y - \overline Y}\\
 \end{align*}
 
 
@@ -107,13 +110,18 @@ a. Consider a model without the squared term, with $rd_i = \beta_1 + \beta_2 sal
 **Solution:** 
 \begin{align*}
 E[\varepsilon_i^*|sales] = & E[\beta_3 sales^2_i + \varepsilon_i |sales] \\
-\end{align*}
+= & E[\beta_3 sales^2_i |sales] + E[\varepsilon_i |sales] \\
+= & E[\beta_3 sales^2_i|sales] + 0 \\
+= & \beta_3 \\
+\end{align*}  
+Since the conditional expectation of $\varepsilon_i^*$ with respect to sales is not $0$ and instead is equal to $\beta_3$, this model violates the assumption of mean independence (unless $\beta_3 = 0$).
 
 b. Suppose we have the following estimates form the true model
 $$\widehat{rd} = 17.79 -327.48(sales) +261.26(sales^2)$$
 Let $\widetilde{b}_2$ be the estimate of the coefficient on sales when the squared term is NOT included in the regression.  Would $\widetilde{b}_2$ be larger or smaller than $-327$? Explain.
 
 **Solution:** 
+$\widetilde{b}_2$ would be larger than $-327$ in a positive direction. When $sales^2$ is included in the regression it has a positive sign and large coefficient. This coefficient will cancel out the negative coefficient of $sales$ for most values of sales (as $sales^2$ will grow faster than $sales$ as the number of sales increases). So you would expect by removing the $sales^2$ variable from the regression that the $sales$ variable will have to reflect the positive relationship between R\&D and sales. Therefore $\widetilde{b}_2$ would be larger. 
 
 
 ### Question 4
@@ -125,43 +133,78 @@ A portion of these students  where awarded school vouchers to attend a charter, 
 a. What is the mean and standard deviation of the math test score variables?
 
 **Solution:** 
+```{R}
+load("~/Desktop/ECON 520/Data/voucher.RData")
+data = data[! is.na(data$mnce90),]
 
-b. Standardize the test score variables by substracting the mean and dividing by the standard deviation.  Call this variables $mnceZ_i$. Estimate a simple linear regression model of the form:
+# Find the mean and standard deviation of the math test score variables
+# Mean and SD of MNCE variable
+mean(data$mnce)
+sd(data$mnce)
+
+# Mean and SD of MNCE90 variable
+mean(data$mnce90)
+sd(data$mnce90)
+```
+
+b. Standardize the test score variables by substracting the mean and dividing by the standard deviation.  Call this variable $mnceZ_i$. Estimate a simple linear regression model of the form:
 $$ mnceZ_i = \beta_0 + \beta_1 select_i + \varepsilon_i$$
 Report your results in equation form. According to the results do students that received a voucher do better or worse on the math test relative to those students that did not receive a voucher?  By how many standard deviations in test score units do voucher students perform better or worse?
 
 **Solution:**  
+```{R}
+data$mnceZ_i = (data$mnce - mean(data$mnce)) / (sd(data$mnce))
+model1 = lm(mnceZ_i ~ select, data = data)
+summary(model1)
+```
+$$ \widehat{mnceZ_i} = 0.02 - 0.07 select_i$$
+Voucher students perform worse on the math test by 0.07 standard deviations.   
 
 
 c. Does your analysis in part b suggest that students that use vouchers cause math test scores to be lower?  Explain.
 
-**Solution:**  
+>**Solution:**  
+The analysis appears to show that students who use vouchers cause math test scores to be lower, however that is not the case. We can only say our coefficient has a causal effect if the linear regression model assumptions are satisfied. Specifically the assumption that all important variables are specified in the regression equation, and are not nested in the error term. Looking at the $R^2$ and $adj-R^2$ we can see the $R^2$ is very low (0.001) and the $adj-R^2$ is negative (-0.001). This tells us we don't have a great fit only using the $select_i$ variable, which implies there are important explanatory variables that have not been used in the equation. So the analysis in part b did not give us a causal variable, instead a BLP (best linear predictor).
 
 d. It is possible that vouchers are not randomly assigned to students.  Consider three sets of student variables: gender, race/ethnicity, and past academic performance.  The variable $female$ is an indicator if the student is female.  The variables $hispanic$ and $black$ are indicators for the race/ethnicity of the student.  The omitted race/ethnic group is non-black/non-hispanic.  Finally the variables $mnce90$ is a math score for the student 4 years earlier, which is a measure of past academic performance.
 <br/><br/>
 Run a regression with the variable $select$ as the dependent variable and the variables listed above as explanatory variables.  Report your results in equation form.  Do these results suggest the vouchers are randomly assigned or do the students that receive vouchers vary systematically from the students that do not receive the vouchers?  Use the results from this regression to characterize the main difference between students that received these vouchers versus those that did not, e.g., those likely to receive vouchers are less likely to be female, etc. 
 
 **Solution:**  
+```{R}
+model2 = lm(select ~ female + hispanic + black + mnce90, data = data)
+summary(model2)
+```
+$$ \widehat{select_i} = 0.099 + 0.033* female + 0.46 *hispanic + 0.27 *black - 0.001* mnce90$$
+From the results of the regression, we would expect students who are hispanic and black to be more likely to receive vouchers than students who are not. Students who are female are slightly more likely than male students to receive a voucher, however it is a pretty small coefficient. Math test scores from 1990 seems to have very little effect on receiving a voucher. Once again, the $R^2$ and $adj-R^2$ are pretty low, so it's unknown how much stock we should put into these predictors.
   
 
 e. Re-do the analysis in part (b) but now add control variables mentioned in part (d).  Report your results in equation form.  According to the results do students that received a voucher do better or worse on the math test relative to those students that did not receive a voucher once we control for these additional variables?  By how many standard deviations in test score units do voucher students perform better or worse?
 
 **Solution:**  
+```{R}
+model3 = lm(mnceZ_i ~ select + female + hispanic + black + mnce90, data = data)
+summary(model3)
+```
+According to the results, the students who have received a voucher perform 0.14 standard deviations better than students who have not received a voucher.
 
 
 f. Which results are more likely to represent the causal effect of vouchers on test scores, the results in part (b) or the results from part (e)?  Why?
 
-**Solution:** 
+>**Solution:**  
+The results in part (e) are more likely to represent the causal effect of vouchers. The model in part (e) accounts for more variables than than the model in part (b). The fit of the model in part (e) suggests it features more important explanatory variables, as the $R^2$ and $adj-R^2$ increased significantly. 
 
 
 g.  Being as clear as possible explain how each of the variables, $female$, $black$, $hispanic$, and $mnce90$ contribute to the omitted variable bias when they are not included in the regression in part (b).  Which variable contributes the least, which contributes the most?
 
 **Solution:**  
+Omitted variable bias comes from the effect of an omitted variable on the dependent variable in the regression equation, multiplied by the coefficient that omitted variable has when used as an explanatory variable for X (X being a matrix of explanatory variables in the original regression equation). Applying this to specific problem, we have calculated the coefficient the omitted variables have when used as an exploratory variable for X (X being the $select$ variable) in part (d). That regression gave us all non-zero coefficients for these variable. Thus the only way these variables would not contribute to the omitted variable bias is if they had no effect on the dependent variable $mnceZ_i$. After running the regression in part (e), we can see they all had some effect on $mnceZ_i$ so we know there is omitted variable bias in the regression of part (b). The variable that contributes least to the omitted variable bias is $mnce90$ as it had the smallest coefficient ($-0.001$) from the regression we ran in part (d). The variable with the biggest contribution to omitted variable bias is $hispanic$ as it had the largest coefficient ($0.46$) from the regression in part (d).
 
 
 h. Finally, assume you had access to a variable about parental income.  Explain under what scenarios the inclusion of this additional variable in the model from part (e), would make the coefficient on $select$ smaller than you found in part (e). 
 
 **Solution:**  
+A scenario under which the inclusion of an additional variable would make the coefficient on $select$ smaller would be one that $select$ is highly correlated with. If $select$ can be explained by another variable (in a regression where $select$ is the dependent variable, and the new variable has a large coefficient), then the coefficient of $select$ will be smaller than in part (e). This is due to the new variable explaining part of the math test score variables that $select$ was previousy explaining. 
 
 
 
