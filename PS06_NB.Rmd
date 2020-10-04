@@ -18,15 +18,16 @@ Define $X^* = X \text{T}$, which produces a linear transformation on the data.  
 
 a. Plug in the definition of $X^*$ to the equation for $b^*$ to show that $b^* = \text{T}^{-1} b$ for any transformation matrix.
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
-X^* = & X \text{T} \\
 b^* = & (X^{*'} X^{*})^{-1} X^{*'} Y \\
-= & ((X \text{T})' (X \text{T}))^{-1} (X \text{T})' Y \\
-= & ((X)'(\text{T})' (X)(\text{T}))^{-1} (X)'(\text{T}) Y \\
-= & (X' X)^{-1}(X)'Y ((\text{T})'(\text{T}))^{-1}(\text{T}) \\
-= & b (\text{T}')^{-1}(\text{T})^{-1}(\text{T}) \\
-= & \text{T}^{-1} b \\
+= & [(XT)^{'}(XT)]^{-1} (XT)^{'} Y \\
+= & [(T^{'}X^{'})(XT)]^{-1} T^{'}X^{'} Y \\
+= & (XT)^{-1}(T^{'}X^{'})^{-1} T^{'}X^{'} Y \\
+= & T^{-1}[X^{-1}(X^{'})^{-1}][(T^{'})^{-1} T^{'}]X^{'}Y \\
+= & T^{-1} (X^{'}X)^{-1}IX^{'}Y \\
+= & T^{-1} (X^{'}X)^{-1}X^{'}Y \\
+b^* = & T^{-1}b \\
 \end{align*}
 
 b. Use the result above to show that $\widehat{Y}$ the predicted values from the original regression equals $\widehat{Y}^*$ the predicted values from the regression with the transformed data.
@@ -138,7 +139,7 @@ Where $E(\varepsilon | sales, sales^2) = E(\varepsilon ) = 0$
 
 a. Consider a model without the squared term, with $rd_i = \beta_1 + \beta_2 sales_i + \varepsilon_i^*$, where $\varepsilon_i^* = \beta_3 sales^2_i + \varepsilon_i$.  Show by taking the conditional expectation of $\varepsilon_i^*$ with respect to $sales$ that this model violates the assumption of mean independence when $\beta_3 \neq 0$.
 
-**Solution:** 
+>**Solution:** 
 \begin{align*}
 E[\varepsilon_i^*|sales] = & E[\beta_3 sales^2_i + \varepsilon_i |sales] \\
 = & E[\beta_3 sales^2_i |sales] + E[\varepsilon_i |sales] \\
@@ -151,7 +152,7 @@ b. Suppose we have the following estimates form the true model
 $$\widehat{rd} = 17.79 -327.48(sales) +261.26(sales^2)$$
 Let $\widetilde{b}_2$ be the estimate of the coefficient on sales when the squared term is NOT included in the regression.  Would $\widetilde{b}_2$ be larger or smaller than $-327$? Explain.
 
-**Solution:** 
+>**Solution:** 
 $\widetilde{b}_2$ would be larger than $-327$ in a positive direction. When $sales^2$ is included in the regression it has a positive sign and large coefficient. This coefficient will cancel out the negative coefficient of $sales$ for most values of sales (as $sales^2$ will grow faster than $sales$ as the number of sales increases). So you would expect by removing the $sales^2$ variable from the regression that the $sales$ variable will have to reflect the positive relationship between R\&D and sales. Therefore $\widetilde{b}_2$ would be larger. 
 
 
@@ -163,8 +164,8 @@ A portion of these students  where awarded school vouchers to attend a charter, 
 
 a. What is the mean and standard deviation of the math test score variables?
 
-**Solution:** 
-```{R}
+>**Solution:** 
+>```{R}
 load("~/Desktop/ECON 520/Data/voucher.RData")
 data = data[! is.na(data$mnce90),]
 
@@ -176,20 +177,20 @@ sd(data$mnce)
 # Mean and SD of MNCE90 variable
 mean(data$mnce90)
 sd(data$mnce90)
-```
+```  
 
 b. Standardize the test score variables by substracting the mean and dividing by the standard deviation.  Call this variable $mnceZ_i$. Estimate a simple linear regression model of the form:
 $$ mnceZ_i = \beta_0 + \beta_1 select_i + \varepsilon_i$$
 Report your results in equation form. According to the results do students that received a voucher do better or worse on the math test relative to those students that did not receive a voucher?  By how many standard deviations in test score units do voucher students perform better or worse?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 data$mnceZ_i = (data$mnce - mean(data$mnce)) / (sd(data$mnce))
 model1 = lm(mnceZ_i ~ select, data = data)
 summary(model1)
 ```
 $$ \widehat{mnceZ_i} = 0.02 - 0.07 select_i$$
-Voucher students perform worse on the math test by 0.07 standard deviations.   
+>Voucher students perform worse on the math test by 0.07 standard deviations.   
 
 
 c. Does your analysis in part b suggest that students that use vouchers cause math test scores to be lower?  Explain.
@@ -201,8 +202,8 @@ d. It is possible that vouchers are not randomly assigned to students.  Consider
 <br/><br/>
 Run a regression with the variable $select$ as the dependent variable and the variables listed above as explanatory variables.  Report your results in equation form.  Do these results suggest the vouchers are randomly assigned or do the students that receive vouchers vary systematically from the students that do not receive the vouchers?  Use the results from this regression to characterize the main difference between students that received these vouchers versus those that did not, e.g., those likely to receive vouchers are less likely to be female, etc. 
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 model2 = lm(select ~ female + hispanic + black + mnce90, data = data)
 summary(model2)
 ```
@@ -212,11 +213,12 @@ From the results of the regression, we would expect students who are hispanic an
 
 e. Re-do the analysis in part (b) but now add control variables mentioned in part (d).  Report your results in equation form.  According to the results do students that received a voucher do better or worse on the math test relative to those students that did not receive a voucher once we control for these additional variables?  By how many standard deviations in test score units do voucher students perform better or worse?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 model3 = lm(mnceZ_i ~ select + female + hispanic + black + mnce90, data = data)
 summary(model3)
 ```
+$$\widehat{mnceZ_i} = -0.9977 + 0.1415(select_i) - 0.0450(female_i) - 0.2484(hispanic_i) - 0.4248(black_i) + 0.0296(mnce90_i)$$
 According to the results, the students who have received a voucher perform 0.14 standard deviations better than students who have not received a voucher.
 
 
@@ -228,13 +230,13 @@ The results in part (e) are more likely to represent the causal effect of vouche
 
 g.  Being as clear as possible explain how each of the variables, $female$, $black$, $hispanic$, and $mnce90$ contribute to the omitted variable bias when they are not included in the regression in part (b).  Which variable contributes the least, which contributes the most?
 
-**Solution:**  
+>**Solution:**  
 Omitted variable bias comes from the effect of an omitted variable on the dependent variable in the regression equation, multiplied by the coefficient that omitted variable has when used as an explanatory variable for X (X being a matrix of explanatory variables in the original regression equation). Applying this to specific problem, we have calculated the coefficient the omitted variables have when used as an exploratory variable for X (X being the $select$ variable) in part (d). That regression gave us all non-zero coefficients for these variable. Thus the only way these variables would not contribute to the omitted variable bias is if they had no effect on the dependent variable $mnceZ_i$. After running the regression in part (e), we can see they all had some effect on $mnceZ_i$ so we know there is omitted variable bias in the regression of part (b). The variable that contributes least to the omitted variable bias is $mnce90$ as it had the smallest coefficient ($-0.001$) from the regression we ran in part (d). The variable with the biggest contribution to omitted variable bias is $hispanic$ as it had the largest coefficient ($0.46$) from the regression in part (d).
 
 
 h. Finally, assume you had access to a variable about parental income.  Explain under what scenarios the inclusion of this additional variable in the model from part (e), would make the coefficient on $select$ smaller than you found in part (e). 
 
-**Solution:**  
+>**Solution:**  
 A scenario under which the inclusion of an additional variable would make the coefficient on $select$ smaller would be one that $select$ is highly correlated with. If $select$ can be explained by another variable (in a regression where $select$ is the dependent variable, and the new variable has a large coefficient), then the coefficient of $select$ will be smaller than in part (e). This is due to the new variable explaining part of the math test score variables that $select$ was previousy explaining. 
 
 
@@ -248,7 +250,7 @@ $$y_i = \beta_1 + \beta_2 x_i^* + \varepsilon^*_i$$
 
 a.  Write explicitly the determinants of $\varepsilon^*_i$.  You do this by plugging in the $x_i = x_i^* - u_i$ into the original equation and re-arrange terms.
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
 y_i = & \beta_1 + \beta_2(x_i^* + u_i) + \varepsilon^*_i \\
 \varepsilon^*_i = & y_i - \beta_1 - \beta_2(x_i^{*} + u_i) \\
@@ -258,7 +260,7 @@ y_i = & \beta_1 + \beta_2(x_i^* + u_i) + \varepsilon^*_i \\
 
 b. Show that $\varepsilon^*_i$ is not mean independent of $x_i^*$.
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
 E[\varepsilon^*_i |x_i^*] = & E[y_i - \beta_1 - \beta_2 x_i^* - \beta_2 u_i|x_i^*] \\
 = & E[y_i |x_i^*] - E[\beta_1 | x_i^*] - E[\beta_2 x_i^* | x_i^*] - E[\beta_2 u_i | x_i^*] \\
@@ -270,6 +272,11 @@ E[\varepsilon^*_i |x_i^*] = & E[y_i - \beta_1 - \beta_2 x_i^* - \beta_2 u_i|x_i^
 c. Treating $u$ as an omitted variable, show that if you estimate  $y_i = \beta_1 + \beta_2 x_i^* + \varepsilon^*_i$ with OLS, the estimate of $\beta_2$ will always be biased towards zero, that is, if $\beta_2>0$, the bias will be negative and if $\beta_2<0$ the bias will be positive.  This is called attenuation bias because it always produces estimated effects that are always weakened (closer to zero).
 
 **Solution:**  
+\begin{align*}
+\hat{y} = & Xb \\
+b = & (X'X)^{-1} (X'Y) \\
+= & (X'X)^{-1} (X'(X))
+\end{align*}
 
 
 
