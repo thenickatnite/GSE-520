@@ -274,9 +274,12 @@ c. Treating $u$ as an omitted variable, show that if you estimate  $y_i = \beta_
 **Solution:**  
 \begin{align*}
 \hat{y} = & Xb \\
-b = & (X'X)^{-1} (X'Y) \\
-= & (X'X)^{-1} (X'(X))
+b = & (X'X)^{-1}(X'Y) \\
+= & (X'X)^{-1}(X'(X \beta + u \gamma + \varepsilon^*)) \\\
+= & (X'X)^{-1}(X'X \beta) + (X'X)^{-1}(X'u) \gamma + (X'X)^{-1}(X' \varepsilon^*) \\
+= & \beta +(X'X)^{-1}(X'u) \gamma + (X'X)^{-1}(X' \varepsilon^*) \\
 \end{align*}
+
 
 
 
