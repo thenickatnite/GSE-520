@@ -273,13 +273,18 @@ c. Treating $u$ as an omitted variable, show that if you estimate  $y_i = \beta_
 
 **Solution:**  
 \begin{align*}
-\hat{y} = & Xb \\
-b = & (X'X)^{-1}(X'Y) \\
+\hat{y} = & X^*b \\
+\end{align*}
+
+\begin{align*}
+b = & ((X^*)' X)^{-1}((X^*)'Y) \\
 = & (X'X)^{-1}(X'(X \beta + u \gamma + \varepsilon^*)) \\\
 = & (X'X)^{-1}(X'X \beta) + (X'X)^{-1}(X'u) \gamma + (X'X)^{-1}(X' \varepsilon^*) \\
 = & \beta +(X'X)^{-1}(X'u) \gamma + (X'X)^{-1}(X' \varepsilon^*) \\
 \end{align*}
 
+$$E(b | X) = \beta + (X'X)^{-1}(X'u) \gamma $$
+We already know that u has a negative relationship with $x_i^*$ from the equation $x_i^* = x_i - u_i$ so when estimating $\beta$ with $b$ we can see that there would something subtracting from $\beta$.
 
 
 
