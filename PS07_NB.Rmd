@@ -1,0 +1,233 @@
+---
+title: 'GSE 520: Problem Set #7'
+author: 
+  - "Nick Brown"
+  - "Michael Chan"
+  - "Ian Donavan"
+  - "Adam Gockel"
+output: html_document
+---
+
+### Question 1
+
+Consider a vector $\theta= (\theta_1, \theta_2, \ldots, \theta_n)$.  The p-norm of $\theta$ is given by 
+$$ ||\theta||_p \equiv \left( \sum_{i=1}^n |\theta_i|^p \right)^{1/p}$$
+Where $p \ge 1$.  If $p =\infty$ then $||\theta||_{\infty} = \displaystyle\max_i |\theta_i|$
+
+Consider the vector $\theta = (-5, -3, -1, 0 , 2, 4)$
+
+a. Calculate by hand the 1-norm of $\theta$
+
+**Solution:**  
+1-norm of $\theta$ is equal to $||\theta||_1 \equiv \left( \sum_{i=1}^n |\theta_i|^1 \right)^{1/1}$.  
+\begin{align*}
+\sum_{i=1}^n |\theta_i|^1 = & |-5| + |-3| + |-1| + |0| + |2| + |4| \\
+= & |-3| = 15 \\
+||\theta||_1  = & (3)^1 \\
+= & 3 \\
+\end{align*}
+
+
+b. Calculate by hand the 2-norm of $\theta$
+
+**Solution:**  
+\begin{align*}
+||\theta||_2 = & ( \sum_{i=1}^n |\theta_i|^2 )^{1/2} \\
+\sum_{i=1}^n |\theta_i|^2 = & (|-5|^2 + |-3|^2 + |-1|^2 + |0|^2 + |2|^2 + |4|^2) \\
+= & 55 \\
+||\theta||_2 = & (55)^{1/2} \\
+= & \sqrt{55} \approx 7.4162 \\
+\end{align*}
+
+c. Calculate by hand the inf-norm of $\theta$
+\begin{align*}
+||\theta||_{\infty} = & \displaystyle\max_i |\theta_i| \\
+= & 5 \\
+\end{align*}
+
+**Solution:**  
+
+d. The function ```norm(x,type = "1")``` will calculate the 1-norm of $x$ in R (type="I") is the inf-norm.  Use this function to double check your calculation of the the norms in (a)-(c) above. (make sure 'x' is a column vector, otherwise it will perform matrix norms)
+
+**Solution:**  
+```{R}
+x = c(-5,-3,-1,0,2,4)
+x = data.matrix(x)
+# for p-norm = 1
+norm(x, type = "1")
+# for p-norm = 2
+norm(x, type = "2")
+# for p-norm = infinity
+norm(x, type = "I")
+```
+
+### Question 2
+The command ```x = rnorm(100000,mean=-5,sd=1.5)``` creates 100,000 random draws from a normal distribution with mean -5 and standard deviation 1.5 (variance 2.25) and stores them in a variables 'x'.  If this function works properly, the mean and standard deviation shoud be very close to the specified parameters
+
+(a) Create a vector that contains 100,000 random draws from $x \sim N(-5,2.25)$.  What is the estimated mean and standard deviation of this vector?  Are they close to the parameters that generated the data?
+
+**Solution:**  
+```{R}
+x = rnorm(100000, mean = -5, sd = 2.25)
+mean(x)
+sd(x)
+```
+They are close to the parameters that generated the data, however not exactly equal to $-5$ and $2.25$. 
+
+(b) The function ```plot(density(x))``` plots the probability density function of the numbers in 'x' using kernel smoothing.  Use this function to plot the density of the random draws from the normal distribution.  Is the result what you expected? (it should be)
+
+**Solution:**  
+```{R}
+plot(density(x))
+```  
+
+Yes the plot looks the way I expected. Since we dictated that the mean is equal to $-5$, the density should be the highest around $-5$. Using the empirical rule, we know that the $95\%$ of the observations is within 2 standard deviations of the mean. Since the standard deviation is $2.25$, two standard deviations away from the mean is between $-9.5$ and $-.5$. This is reflected by the graph.
+
+### Question 3
+In this problem we will conduct what are called Monte Carlo simulations, where, rather than work with real data we simulate data in a controlled environment so we can better understand the properties of different estimators.
+
+Let $x$ be a vector of $n$ draws from a random variable.  The sample average of $x$ is an estimate of $E(x)=\mu$.  Define the sample average
+$$\hat{\mu} = \frac{1}{n}\sum_{i=1}^n x_i$$
+
+(a) Prove that the sample average is unbiased (i.e., $E(\hat{\mu})=\mu$)
+
+**Solution:**  
+\begin{align*}
+E(\hat{\mu}) = & E(\frac{1}{n}\sum_{i=1}^n x_i) \\
+= & \frac{1}{n} \sum_{i=1}^n E(x_i) \\
+= & \frac{1}{n} \sum_{i=1}^n (\mu) \\
+= & \mu
+\end{align*}
+
+
+(b) The variance of the sample average estimator is $Var(\hat{\mu}) = \sigma^2/n$, where $\sigma^2=Var(x)$.  Using this formula, explain the two things that make this variance smaller.
+
+**Solution:**  
+The two things that make the variance of the sample average estimator smaller is increasing the sample size $n$ and decreasing the variance of $x$. Since the sample size $n$ is in the denominator, an increase in $n$ will result in a decrease in the $Var(\hat{\mu})$. Since the $Var(x)$ is in the numerator, the variance of $x$ would have to decrease to decrease $Var(\hat{\mu})$.
+
+(c) Suppose you have $n=20$ draws of a random variable, $x \sim N(-5,2.25)$, and you compute the sample mean $\hat{\mu}= (1/n) \sum_{i=1}^n x_i$.  We can simulate this data and calculate the sample mean with the code
+```
+x = rnorm(20,mean=-5,sd=1.5)
+muhat = mean(x)
+```
+To understand the properties of this estimator, we would like to replicate this procedure 100,000 times.  The code below uses a for loop to replicate this procedure 100,000 times.
+```
+numsamp = 100000
+muhat_all = matrix(0,nrow = numsamp,ncol = 1)
+for (i in 1:numsamp){
+  x = rnorm(20,mean=-5,sd=1.5)
+  muhat_all[i] = mean(x)
+}
+```
+Use this code to conduct the Monte Carlo Simulation.  Is the mean and variance of these replicates equal to what we found in Part (a) and (b) above.
+
+**Solution:**  
+```{R}
+# Create the Monte Carlo Simulation
+numsamp = 100000
+muhat_all = matrix(0,nrow = numsamp,ncol = 1)
+for (i in 1:numsamp){
+  x = rnorm(20,mean=-5,sd=1.5)
+  muhat_all[i] = mean(x)
+}
+
+mean(muhat_all)
+sd(muhat_all)
+```
+The mean is close to what we did above, however the variance is substantially smaller. I assume this is due to taking a large amount of sample means and an increase in sample size reduces variance. 
+
+(d) Plot the kernel density of the estimates.  Do the estimates appear to be normally distributed?
+
+**Solution:**  
+```{R}
+plot(density(muhat_all))
+```
+
+The estimates do appear to be normally distributed looking at the graph, it has a nice bell curve. 
+
+
+### Question 4
+The exponential function is a distribution that is characterized by the rate parameter $\lambda$.  If $x \sim exponential(\lambda)$, then $E(x) = 1/\lambda$ and $Var(x) = 1/\lambda^2$.  The function ```x = rexp(100000,rate=3)``` creates 100,000 draws from a random variable with an exponential distribution and rate parameter equal 3
+
+(a) Create 100,000 draws of an exponential random variable with rate parameter 3 and see if the mean and variance of these draws matches the formulas I states above.
+
+**Solution:**  
+```{R}
+# Create 'x' variable
+x = rexp(100000, rate =3)
+# Find mean and sd 
+mean(x)
+(sd(x))^2
+```  
+The mean and variance appear to be very close to formulas stated above. As the mean would be $\frac{1}{3} \approx .33$. The variance would be equal to $\frac{1}{3^2} \approx .11$.
+
+(b) Plot the kernel density of these 100,000 draws from the exponential distribution with rate parameter 3
+
+**Solution:**  
+```{R}
+plot(density(x))
+```
+
+(c) Repeat the Monte Carlo simulations you conducted in Question 3 Part (c), except now, the data is 20 draws from an exponential distribution with rate parameter 3.  What do you expect the mean and variance to be for the distribution of the estimator?  Are these numbers close to the ones generated from the Monte Carlo simulates?
+
+**Solution:**  
+```{R}
+numsamp = 100000
+muhat_all = matrix(0,nrow = numsamp,ncol = 1)
+for (i in 1:numsamp){
+  x = rexp(20,rate = 3)
+  muhat_all[i] = mean(x)
+}
+```
+I would expect the mean to be close to $\frac{1}{3}$ and the variance to be smaller than the approximately $\frac{1}{9}$ figure we found before.
+```{R}
+mean(muhat_all)
+(sd(muhat_all))^2
+```
+It appears my estimates were correct. 
+
+(d) Plot the kernel density of the estimates in Part (c).  Do the estimates appear to be normally distributed?
+
+**Solution:**  
+```{R}
+plot(density(muhat_all))
+```
+
+It appears to be more normal than the first graph. Not perfectly normal as the tails are a little strange.
+
+### Question 5
+Suppose $x_1 \sim N(0,1)$.  Define $x_2$ as 
+$$x_2 = \left(\sqrt{1-a}\right)x_1 + \eta$$
+Where $\eta \sim N(0,a)$ and $0\le a < 1$
+
+We can simulate $n$ observations of this data with the code (make sure you define $n$ and $a$ before these lines)
+```
+x1 = rnorm(n,mean=0,sd=1)
+x2 = sqrt(1-a)*x1 + rnorm(n,mean=0,sd=sqrt(a))
+```
+
+(a) Prove that given the information above $Var(x_2)=1$ regardless of the value of $a$.  Don't forget to include $Cov(x_1,\eta)=0$ in your proof.
+
+**Solution:**  
+
+(b) What is the $Cov(x_1,x_2)$? Is it a function of $a$? (Hint: since the $E(x_1)=0$ and $E(x_2)=0$, $Cov(x_1,x_2) = E(x_1x_2)$.  Don't forget to include $Cov(x_1,\eta)=0$ in your proof.
+
+**Solution:**  
+
+(c) Consider the linear regression model
+$$ y = \beta_1 x_1 + \beta_2 x_2 + \varepsilon$$
+Where $\varepsilon \sim N(0,\sigma^2)$.  Note this model does not have an intercept. Let $b = (b_1,b_2)$ be the least squares estimate of this model.  Construct the variance-covariance matrix of $b$ as a $2 \times 2$ matrix that is only a function of $a$, $n$ and $\sigma^2$
+
+**Solution:**  
+
+(d) Let $\beta_1=1$, $\beta_2=1$, $\sigma^2=10$, and $n=50$. Choose a value for $a$ and use Monte Carlo simulation with 100,000 samples to show that the formula you constructed in Part (c) is correct.
+
+**Solution:**  
+
+(e) Choose either a larger value for $a$, $n$, or $\sigma^2$ than you did in Part (d) and redo the Monte Carlo simulation.  How does the variance of the least squares estimates with these new numbers compare to the ones in Part (d). Is this what you expected? Explain. 
+
+**Solution:**  
+
+(f) Plot the kernel density of the estimates of both $b_1$ and $b_2$ in Part (e).  Do the estimates appear to be normally distributed?
+
+**Solution:**  
