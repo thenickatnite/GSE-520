@@ -18,7 +18,7 @@ Consider the vector $\theta = (-5, -3, -1, 0 , 2, 4)$
 
 a. Calculate by hand the 1-norm of $\theta$
 
-**Solution:**  
+>**Solution:**  
 1-norm of $\theta$ is equal to $||\theta||_1 \equiv \left( \sum_{i=1}^n |\theta_i|^1 \right)^{1/1}$.  
 \begin{align*}
 \sum_{i=1}^n |\theta_i|^1 = & |-5| + |-3| + |-1| + |0| + |2| + |4| \\
@@ -30,7 +30,7 @@ a. Calculate by hand the 1-norm of $\theta$
 
 b. Calculate by hand the 2-norm of $\theta$
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
 ||\theta||_2 = & ( \sum_{i=1}^n |\theta_i|^2 )^{1/2} \\
 \sum_{i=1}^n |\theta_i|^2 = & (|-5|^2 + |-3|^2 + |-1|^2 + |0|^2 + |2|^2 + |4|^2) \\
@@ -40,17 +40,17 @@ b. Calculate by hand the 2-norm of $\theta$
 \end{align*}
 
 c. Calculate by hand the inf-norm of $\theta$
+
+>**Solution:**  
 \begin{align*}
 ||\theta||_{\infty} = & \displaystyle\max_i |\theta_i| \\
 = & 5 \\
 \end{align*}
 
-**Solution:**  
-
 d. The function ```norm(x,type = "1")``` will calculate the 1-norm of $x$ in R (type="I") is the inf-norm.  Use this function to double check your calculation of the the norms in (a)-(c) above. (make sure 'x' is a column vector, otherwise it will perform matrix norms)
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 x = c(-5,-3,-1,0,2,4)
 x = data.matrix(x)
 # for p-norm = 1
@@ -66,8 +66,8 @@ The command ```x = rnorm(100000,mean=-5,sd=1.5)``` creates 100,000 random draws 
 
 (a) Create a vector that contains 100,000 random draws from $x \sim N(-5,2.25)$.  What is the estimated mean and standard deviation of this vector?  Are they close to the parameters that generated the data?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 x = rnorm(100000, mean = -5, sd = 2.25)
 mean(x)
 sd(x)
@@ -76,12 +76,12 @@ They are close to the parameters that generated the data, however not exactly eq
 
 (b) The function ```plot(density(x))``` plots the probability density function of the numbers in 'x' using kernel smoothing.  Use this function to plot the density of the random draws from the normal distribution.  Is the result what you expected? (it should be)
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 plot(density(x))
 ```  
 
-Yes the plot looks the way I expected. Since we dictated that the mean is equal to $-5$, the density should be the highest around $-5$. Using the empirical rule, we know that the $95\%$ of the observations is within 2 standard deviations of the mean. Since the standard deviation is $2.25$, two standard deviations away from the mean is between $-9.5$ and $-.5$. This is reflected by the graph.
+>Yes the plot looks the way I expected. Since we dictated that the mean is equal to $-5$, the density should be the highest around $-5$. Using the empirical rule, we know that the $95\%$ of the observations is within 2 standard deviations of the mean. Since the standard deviation is $2.25$, two standard deviations away from the mean is between $-9.5$ and $-.5$. This is reflected by the graph.
 
 ### Question 3
 In this problem we will conduct what are called Monte Carlo simulations, where, rather than work with real data we simulate data in a controlled environment so we can better understand the properties of different estimators.
@@ -91,7 +91,7 @@ $$\hat{\mu} = \frac{1}{n}\sum_{i=1}^n x_i$$
 
 (a) Prove that the sample average is unbiased (i.e., $E(\hat{\mu})=\mu$)
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
 E(\hat{\mu}) = & E(\frac{1}{n}\sum_{i=1}^n x_i) \\
 = & \frac{1}{n} \sum_{i=1}^n E(x_i) \\
@@ -102,7 +102,7 @@ E(\hat{\mu}) = & E(\frac{1}{n}\sum_{i=1}^n x_i) \\
 
 (b) The variance of the sample average estimator is $Var(\hat{\mu}) = \sigma^2/n$, where $\sigma^2=Var(x)$.  Using this formula, explain the two things that make this variance smaller.
 
-**Solution:**  
+>**Solution:**  
 The two things that make the variance of the sample average estimator smaller is increasing the sample size $n$ and decreasing the variance of $x$. Since the sample size $n$ is in the denominator, an increase in $n$ will result in a decrease in the $Var(\hat{\mu})$. Since the $Var(x)$ is in the numerator, the variance of $x$ would have to decrease to decrease $Var(\hat{\mu})$.
 
 (c) Suppose you have $n=20$ draws of a random variable, $x \sim N(-5,2.25)$, and you compute the sample mean $\hat{\mu}= (1/n) \sum_{i=1}^n x_i$.  We can simulate this data and calculate the sample mean with the code
@@ -121,8 +121,8 @@ for (i in 1:numsamp){
 ```
 Use this code to conduct the Monte Carlo Simulation.  Is the mean and variance of these replicates equal to what we found in Part (a) and (b) above.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 # Create the Monte Carlo Simulation
 numsamp = 100000
 muhat_all = matrix(0,nrow = numsamp,ncol = 1)
@@ -130,20 +130,19 @@ for (i in 1:numsamp){
   x = rnorm(20,mean=-5,sd=1.5)
   muhat_all[i] = mean(x)
 }
-
 mean(muhat_all)
 sd(muhat_all)
 ```
-The mean is close to what we did above, however the variance is substantially smaller. I assume this is due to taking a large amount of sample means and an increase in sample size reduces variance. 
+>The mean is close to what we did above, however the variance is substantially smaller. I assume this is due to taking a large amount of sample means and an increase in sample size reduces variance. 
 
 (d) Plot the kernel density of the estimates.  Do the estimates appear to be normally distributed?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 plot(density(muhat_all))
-```
-
-The estimates do appear to be normally distributed looking at the graph, it has a nice bell curve. 
+```  
+>
+The estimates do appear to be normally distributed looking at the graph, it has a relatively nice bell curve. 
 
 
 ### Question 4
@@ -151,27 +150,27 @@ The exponential function is a distribution that is characterized by the rate par
 
 (a) Create 100,000 draws of an exponential random variable with rate parameter 3 and see if the mean and variance of these draws matches the formulas I states above.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 # Create 'x' variable
 x = rexp(100000, rate =3)
-# Find mean and sd 
+# Find mean and variance 
 mean(x)
 (sd(x))^2
 ```  
-The mean and variance appear to be very close to formulas stated above. As the mean would be $\frac{1}{3} \approx .33$. The variance would be equal to $\frac{1}{3^2} \approx .11$.
+>The mean and variance appear to be very close to formulas stated above. As the mean would be $\frac{1}{3} \approx .33$. The variance would be equal to $\frac{1}{3^2} \approx .11$.
 
 (b) Plot the kernel density of these 100,000 draws from the exponential distribution with rate parameter 3
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 plot(density(x))
 ```
 
 (c) Repeat the Monte Carlo simulations you conducted in Question 3 Part (c), except now, the data is 20 draws from an exponential distribution with rate parameter 3.  What do you expect the mean and variance to be for the distribution of the estimator?  Are these numbers close to the ones generated from the Monte Carlo simulates?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 numsamp = 100000
 muhat_all = matrix(0,nrow = numsamp,ncol = 1)
 for (i in 1:numsamp){
@@ -180,19 +179,19 @@ for (i in 1:numsamp){
 }
 ```
 I would expect the mean to be close to $\frac{1}{3}$ and the variance to be smaller than the approximately $\frac{1}{9}$ figure we found before.
-```{R}
+>```{R}
 mean(muhat_all)
 (sd(muhat_all))^2
 ```
-It appears my estimates were correct. 
+>It appears my estimates were correct. 
 
 (d) Plot the kernel density of the estimates in Part (c).  Do the estimates appear to be normally distributed?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 plot(density(muhat_all))
 ```
-
+>
 It appears to be more normal than the first graph. Not perfectly normal as the tails are a little strange.
 
 ### Question 5
