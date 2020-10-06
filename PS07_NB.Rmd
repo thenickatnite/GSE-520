@@ -236,9 +236,25 @@ Where $\varepsilon \sim N(0,\sigma^2)$.  Note this model does not have an interc
 
 **Solution:**  
 
+
+
+
+
 (d) Let $\beta_1=1$, $\beta_2=1$, $\sigma^2=10$, and $n=50$. Choose a value for $a$ and use Monte Carlo simulation with 100,000 samples to show that the formula you constructed in Part (c) is correct.
 
 **Solution:**  
+Need to edit this.
+```{R}
+# Create the Monte Carlo Simulation
+numsamp = 100000
+muhat_all = matrix(0,nrow = numsamp,ncol = 1)
+for (i in 1:numsamp){
+  x1 = rnorm(n,mean=0,sd=1)
+  muhat_all[i] = mean(x)
+}
+mean(muhat_all)
+sd(muhat_all)
+```
 
 (e) Choose either a larger value for $a$, $n$, or $\sigma^2$ than you did in Part (d) and redo the Monte Carlo simulation.  How does the variance of the least squares estimates with these new numbers compare to the ones in Part (d). Is this what you expected? Explain. 
 
