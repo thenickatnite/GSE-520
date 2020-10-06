@@ -208,10 +208,27 @@ x2 = sqrt(1-a)*x1 + rnorm(n,mean=0,sd=sqrt(a))
 (a) Prove that given the information above $Var(x_2)=1$ regardless of the value of $a$.  Don't forget to include $Cov(x_1,\eta)=0$ in your proof.
 
 **Solution:**  
+The variance for $x_1 =1$ since the standard deviation is given as 1. The variance for $\eta = a$. 
+\begin{align*}
+var(x_2) = & var(\sqrt{1-a}x_1 + \eta) \\
+= & (1-a)var(x_1) + var(\eta) + 2cov(x_1, \eta) \\
+= & (1-a)(1) + a + 0 \\
+= & 1 \\
+\end{align*}  
+Because the $a$ variables cancel, the variance of $x_2$ is always equal to 1, regardless of what $a$ is. 
 
 (b) What is the $Cov(x_1,x_2)$? Is it a function of $a$? (Hint: since the $E(x_1)=0$ and $E(x_2)=0$, $Cov(x_1,x_2) = E(x_1x_2)$.  Don't forget to include $Cov(x_1,\eta)=0$ in your proof.
 
 **Solution:**  
+\begin{align*}
+Cov(x_1, x_2) = & E(x_1 x_1) \\
+= & E(x_1(\sqrt{1-a}x_1 + \eta)) \\
+= & E((\sqrt{1-a}x_1^2) + x_1 \eta) \\
+= & E(\sqrt{1-a}x_1^2) + E(x_1 \eta) \\
+= & E(\sqrt{1-a}x_1^2) + Cov(x_1, \eta) \\
+= & \sqrt{1-a}E(x_1^2) + 0 \\
+\end{align*}
+
 
 (c) Consider the linear regression model
 $$ y = \beta_1 x_1 + \beta_2 x_2 + \varepsilon$$
