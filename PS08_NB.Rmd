@@ -201,7 +201,8 @@ The authors offer a causal and non-causal explanation for any possible empirical
 
 (a) The authors begin by estimating the equation above using ordinary least squares.  Which of the assumptions in the classic linear regression model would be most important in order to view the estimate of $\alpha_1$ as a causal effect of parental education on the outcome $H^c$?
 
-**Solution:**  
+>**Solution:**  
+The most important classical linear assumption is the assumption of mean independence between $S^p$ and the error term. If there is no mean independence between these two variables, then we cannot say there is a causal effect of $S^p$ and the $H^c$, instead we can only say that $S^p$ is a best linear predictor of of $H^c$. If mean independence fails, OLS will produce biased results instead of the unbaised results we are looking for.
 
 
 (b)
@@ -214,7 +215,8 @@ Father Years of Schooling ($\alpha_1$) | 0.1090 (0.0009) | 0.0583 (0.0008)
 
     In one sentence, summarize *qualitatively* the results of the coefficient estimates in this table.  In one sentence provide *one quantitative* result expressed in this table (the dependent variables have been standardized to have mean zero and standard deviation of one).
 
-**Solution:**  
+>**Solution:**  
+From the table it appears a mother's education experience is more important to the cognitive and non-cognitive aspects of a child than the father's education experience. An additional year of a mother's schooling increase a child's cognitive ability by $0.1188$ and a child's non-cognitive ability by $0.0651$.
 
 
 (c) The question does not state the sample size.  Given their extremely simple model they likely have a very small R-squared.  However, they also have extremely small standard errors on the parameters.  What do these two facts suggest about the size of the sample used in estimation. Explain.
