@@ -221,13 +221,16 @@ From the table it appears a mother's education experience is more important to t
 
 (c) The question does not state the sample size.  Given their extremely simple model they likely have a very small R-squared.  However, they also have extremely small standard errors on the parameters.  What do these two facts suggest about the size of the sample used in estimation. Explain.
 
-**Solution:**  
+>**Solution:**  
+Since the standard errors are so small, this can imply that the sample size is very large. This is due to how the estimates of the standard errors are calculated with the $s^2$ variable being dependent upon the sample size and and number of predictors. Since we only have one predictor in this equation, then if the sample size is large, $s^2$ will be small. If $s^2$ is small, that reduces the value of the standard errors. 
 
 
 (d) Using these results, construct a 95\% confidence interval for the estimate for the impact of an additional year of education for the father on noncognitive skills of their children.
 
-**Solution:**  
-
+>**Solution:**  
+Since we're assuming a large sample size, then we can use the critical value of $1.96$ from the z-table, as the t-distribution approaches the z-distribution when the sample size is large. So a $95\%$ Confidence Interval for the estimate of the impact of an additional year of education for the father on noncognitive skills of their children would be:
+$$[0.0583 - 1.96 \times 0.0008, 0.0583 + 1.96 \times 0.0008]$$
+We would be $95\%$ confident that the true value of the estimate would be between $[0.056732,0.059868]$.
   
 
 ### Question 4
@@ -236,13 +239,14 @@ For each statement below determine whether the statement is true or false and ex
 
 (a) In the population, the distribution of $Y$ conditional on $X$ can be written as $P(Y | X)$.  Suppose this distribution satisfies the set of assumptions in the classical linear regression model.  If we estimate $\beta$ from two different random samples from the population, then we will get two different answers because $\beta$ is an unknown random variable in the population. 
 
-**Solution:**  
+>**Solution:**  
+True. $\beta$ is unknowable as we often don't have the full population data. When estimating $\beta$ with $b$, we are using our sample data to approximate $\beta$, this $b$ can be accurate or inaccurate but it depends on the sample data. Since the two samples are different, with different observations to be basing the estimate off of, then for two different samples the estimate of $\beta$ will be different (although they may be close to each other).
 
 
 (b)  Consider the long regression $y = x_1 \beta_1 + x_2 \beta_2 + \varepsilon$, then the estimate of the short regression $y = x_1 \beta_1 + \widetilde{\varepsilon}$ is always biased if $E(x_2 | x_1) \neq E(x_2)$.
 
 **Solution:**  
-
+True. If the expectation of $x_2$ given $x_1$ shows the that the two variables are not mean independent, that means any regression excluding $x_2$ is going to suffer from omitted variable bias.
 
 (c) In the classical linear regression model we assumed normal disturbance, i.e. $\varepsilon \sim \mathcal{N}(0,\sigma^2)$.  Because of this assumption we are able to show that the variance of the least squares estimator was $Var(b | X) = \sigma^2 (X'X)^{-1}$
 
@@ -256,15 +260,18 @@ Discuss which (if any) assumptions of the linear regression model are violated f
 (a) Heteroskedasticity. 
 
 **Solution:**  
+Heteroskedasticity violates assumption 4 (Homoskedasticity and non-autocorrelation) of the linear regression model. This assumption assumes the same variance for the error factor (homoskedasticity), if their is heteroskedasticity then the error terms have different variances. Violation of assumption 4 does not cause the least squares to be biased. 
 
 
 (b) Omitting an important variable. 
 
 **Solution:**  
+Omitting an important variable violates assumption 3: mean independence which says $E(\varepsilon|X) = E(\varepsilon) = 0. If we omit an important variable, the error term will be correlated with X and thus not equal 0. Violating this assumption does cause least squares to be biased. 
 
 
 (c)  A sample correlation coefficient of .95 between two independent variables both included in the model.
 
-**Solution:**  
+>**Solution:**  
+A sample correlation coefficient of $.95$ between two independent variables represents multicollinearity. Multicollinearity is associated with the first assumption of full rank of X. However, multicollinearity does not mean violation of the full rank of X, only near violation. So this does not violate any assumptions. If you remove one of the independent variables, that would bias the results. Leaving both would introduce no bias however will make our coefficients act strangely (implausible signs or magnitude of signs, large changes when the data has a small change, high standard errors but with a high $R^2$).
 
 
