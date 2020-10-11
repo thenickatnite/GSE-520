@@ -142,17 +142,18 @@ The 95\% confidence interval for predicted values is $[261.255, 294.245]$.
 **Solution:**  
 \begin{align*}
 E(y_o - \hat{y}_o) = & E(x_o' \beta + \varepsilon_o - x_o'b) \\
-= & x_o' E(\beta) + E(\varepsilon_o) - x_o'E(b) \\
-= & x_o' \beta + \sigma^2 - x_o' \beta \\
-= & \sigma^2 \\
+= & E(x_o'(\beta - b) + \varepsilon_o) \\
+= & x_o' E(\beta - b) + E(\varepsilon_o) \\
+= & x_o' E(\beta - b) + (0) \\
+= & x_o'(\beta - E(b)) \\
+= & 0 \\
 \end{align*}
 
 \begin{align*}
 Var(y_o - \hat{y}_o) = & Var(x_o' \beta + \varepsilon_o - x_o'b) \\
-= & Var(x_o' \beta) + Var(\varepsilon_o) - Var(x_o' b) \\
-= & Var(x_o' \beta) - Var(x_o' b) + \sigma^2 \\
-= & x_o' Var(\beta) - x_o' Var(b) + \sigma^2 \\
-= & x_o' \widehat{Var(b)}x_o + \sigma^2 \\
+= & Var(x_o'(\beta-b) + \varepsilon_o) \\
+= & x_o' Var(\beta-b)x_0 + Var(\varepsilon_o) \\
+= & x_o' \widehat{Var(b)}x_0 + \sigma^2 \\
 \end{align*}
 
 (e) Construct a 95\% prediction interval for $y_o$ using the fact that 
@@ -182,18 +183,22 @@ predict(mod,pdata,interval="prediction")
 predict(mod,pdata,interval="confidence")
 ```
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 mod = lm(price~bdrms+I(sqrft/100)+I(lotsize/100),data=data)
 confint(mod)
 pdata = data.frame(bdrms=3,sqrft=20*100,lotsize=60*100)
 predict(mod,pdata,interval="prediction")
 predict(mod,pdata,interval="confidence")
 ```
-The first line of code runs a least squares regression using $price$ as the dependent variable and $bdrms$, $sqrft/100$, and $lotsize/100$ as the explanatory variables.   
+>The first line of code runs a least squares regression using $price$ as the dependent variable and $bdrms$, $sqrft/100$, and $lotsize/100$ as the explanatory variables.
+>
 The second line creates a $95\%$ confidence interval for the data, as opposed to having to choose a critical value it just uses the data and has a built in function for that.  
+>
 The third line creates a matrix of data that will be used to predict the selling price of a homes based on its number of $bdrms$, $sqrft/100$, and $lotsize/100$.  
+>
 The fourth line creates a predicition interval for the data.  
+>
 The fifth line of data creates a confidence interval for predicted values.  
 
 
