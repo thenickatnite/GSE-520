@@ -35,8 +35,8 @@ The coefficient $\beta_3$ represents a $\$12,000$ increase in price for every ad
 
 (c) Using only matrices, in ```R``` reproduce the least squares estimates and the estimates of the standard errors using the data set.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 # Reproduce the least squares estimates using matrices
 load('../Data/hprice1.RData')
 data = data[! is.na(data$price),]
@@ -45,7 +45,6 @@ X = cbind(rep(1,n), data$bdrms, (data$sqrft)/100, (data$lotsize)/100)
 Y = data$price
 b = solve(t(X) %*% X) %*%(t(X) %*% Y)
 b
-
 # Find the estimates of the standard errors
 s = sum((Y - X %*%b)**2 / (nrow(X) - ncol(X)))
 sqrt(diag(s * solve(t(X)%*%(X))))
@@ -123,12 +122,11 @@ SEyhat_o = sqrt(t(x_o) %*% vcov(mod) %*% x_o)
 ```  
 Choose the appropriate critical value to construct the confidence interval.  THIS IS CALLED A CONFIDENCE INTERVAL FOR PREDICTED VALUES.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 x_o = matrix(c(1,3,20,60))
 yhat_o = t(x_o) %*% mod$coefficients
 SEyhat_o = sqrt(t(x_o) %*% vcov(mod) %*% x_o)
-
 # Using the critical value we found in part a
 CV = 1.990
 CI = c(yhat_o - CV*SEyhat_o, yhat_o + CV*SEyhat_o)
@@ -142,27 +140,41 @@ The 95\% confidence interval for predicted values is $[261.255, 294.245]$.
     Consider the random variable actual selling price minus predicted selling price, $y_o - \hat{y}_o= x_o' \beta + \varepsilon_o - x_o'b$.  What is $E(y_o - \hat{y}_o)$?  Show that $Var(y_o - \hat{y}_o) = x_o' \widehat{Var(b)}x_o + \sigma^2$
 
 **Solution:**  
+\begin{align*}
+E(y_o - \hat{y}_o) = & E(x_o' \beta + \varepsilon_o - x_o'b) \\
+= & x_o' E(\beta) + E(\varepsilon_o) - x_o'E(b) \\
+= & x_o' \beta + \sigma^2 - x_o' \beta \\
+= & \sigma^2 \\
+\end{align*}
+
+\begin{align*}
+Var(y_o - \hat{y}_o) = & Var(x_o' \beta + \varepsilon_o - x_o'b) \\
+= & Var(x_o' \beta) + Var(\varepsilon_o) - Var(x_o' b) \\
+= & Var(x_o' \beta) - Var(x_o' b) + \sigma^2 \\
+= & x_o' Var(\beta) - x_o' Var(b) + \sigma^2 \\
+= & x_o' \widehat{Var(b)}x_o + \sigma^2 \\
+\end{align*}
 
 (e) Construct a 95\% prediction interval for $y_o$ using the fact that 
 $$\frac{y_o- \hat{y}_o}{\sqrt{x_o' \widehat{Var(b)}x_o + s^2}} \sim t[n-K]$$
 You can use the following code to help construct the prediction interval.
-    ```
+```
 s2 = sum(mod$residuals^2)/mod$df.residual
 vy_o = t(x_o) %*% vcov(mod) %*% x_o + s2
 ```
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 s2 = sum(mod$residuals^2)/mod$df.residual
 vy_o = t(x_o) %*% vcov(mod) %*% x_o + s2
 
 P_I = c(((yhat_o) - CV*sqrt(vy_o)),((yhat_o) + CV*sqrt(vy_o)))
 P_I
-```
+```  
 
 
 (f) Finally, run the following commands in ```R```.  Explain what each of these commands is doing relative to what you just did by hand above.
-    ```
+```
 mod = lm(price~bdrms+I(sqrft/100)+I(lotsize/100),data=data)
 confint(mod)
 pdata = data.frame(bdrms=3,sqrft=20*100,lotsize=60*100)
@@ -251,6 +263,7 @@ True. If the expectation of $x_2$ given $x_1$ shows the that the two variables a
 (c) In the classical linear regression model we assumed normal disturbance, i.e. $\varepsilon \sim \mathcal{N}(0,\sigma^2)$.  Because of this assumption we are able to show that the variance of the least squares estimator was $Var(b | X) = \sigma^2 (X'X)^{-1}$
 
 **Solution:**  
+False. We are able to show that the variance of the least squares estimator is $Var(b |X) = \sigma^2$ because of assumption 4: Homoskedasticity and Non-autocorrelation.
 
 
 ### Question 5
@@ -259,14 +272,14 @@ Discuss which (if any) assumptions of the linear regression model are violated f
 
 (a) Heteroskedasticity. 
 
-**Solution:**  
+>**Solution:**  
 Heteroskedasticity violates assumption 4 (Homoskedasticity and non-autocorrelation) of the linear regression model. This assumption assumes the same variance for the error factor (homoskedasticity), if their is heteroskedasticity then the error terms have different variances. Violation of assumption 4 does not cause the least squares to be biased. 
 
 
 (b) Omitting an important variable. 
 
-**Solution:**  
-Omitting an important variable violates assumption 3: mean independence which says $E(\varepsilon|X) = E(\varepsilon) = 0. If we omit an important variable, the error term will be correlated with X and thus not equal 0. Violating this assumption does cause least squares to be biased. 
+>**Solution:**  
+Omitting an important variable violates assumption 3: mean independence which says $E(\varepsilon|X) = E(\varepsilon) = 0$. If we omit an important variable, the error term will be correlated with X and thus not equal 0. Violating this assumption does cause least squares to be biased. 
 
 
 (c)  A sample correlation coefficient of .95 between two independent variables both included in the model.
