@@ -1,0 +1,165 @@
+---
+title: 'GSE 520: Problem Set #9'
+author: 
+  - "Nick Brown"
+  - "Russell McIntosh"
+  - "Amanda Walker"
+output: html_document
+---
+
+### Question 1
+
+A multiple regression of $y$ on a constant $x_1$ and $x_2$ produces the following results: $\hat{y} =4+0.4x_1 +0.9x_2$, $R^2=8/60$, $e'e = 520$, and $n=29$
+\begin{align*}
+X'X = \left[ 
+\begin{matrix}
+29 & 0 & 0 \\
+0 & 50 & 10 \\
+0 & 10 & 80
+\end{matrix} \right]
+\end{align*}
+
+(a) Use these results to form confidence intervals for the coefficients on $x_1$ and $x_2$, called $\beta_1$ and $\beta_2$ respectively.
+
+**Solution:**  
+```{R}
+beta1_hat = 0.4
+beta2_hat = 0.9
+n = 29
+e_e =520 
+X = matrix(c(29,0,0,0,50,10,0,10,80), nrow = 3, ncol=3)
+SE_hat_1 = sqrt((e_e / n- 3) * solve(X[1,1]))
+SE_hat_2 = sqrt((e_e / n- 3) * solve(X[2,2]))
+
+df = n -3
+C = 1- .05
+CV = abs(qt((1-C)/2,df))
+ 
+
+CI_beta1 = beta1_hat + c(-1,1)*CV*SE_hat_1
+CI_beta1
+CI_beta2 = beta2_hat + c(-1,1)*CV*SE_hat_2
+CI_beta2
+```
+
+
+(b) Test the hypothesis that the two slopes sum to 1. Compute the F-statistic and the p-value and state your conclusion from the test.
+
+**Solution:**  
+
+
+### Question 2
+The median starting salary for new law school graduates is determined by
+$$\ln(salary) = \beta_0 + \beta_1 LSAT + \beta_2 GPA + \beta_3 \ln(libvol)  + \beta_4 \ln(cost) + \beta_5 rank +u$$
+where $LSAT$ is the median LSAT score for the graduating class, $GPA$ is the median college GPA for the class, $libvol$ is the number of volumes in the law school library, $cost$ is the annual cost of attending law school, and $rank$ is a law school ranking (with $rank=1$ being the best).
+
+Using the data in ```LAWSCH85```, the regression output from ```R``` appears as
+```{r,echo=FALSE}
+load('../Data/lawsch85.RData')
+mod = lm(lsalary~LSAT+GPA+llibvol+lcost+rank,data=data)
+summary(mod)
+```
+
+Using only linear algebra and matrices reproduce the following from this table: (don't forget to remove the NA's)
+
+(a) The coefficient estimates.
+
+**Solution:**  
+```{R}
+data = data[! is.na(data$lsalary),]
+data = data[! is.na(data$LSAT),]
+data = data[! is.na(data$GPA),]
+data = data[! is.na(data$libvol),]
+data = data[! is.na(data$lcost),]
+data = data[! is.na(data$rank),]
+n = nrow(data)
+
+X = cbind(rep(1,n), data$LSAT, data$GPA, data$llibvol, data$lcost, data$rank)
+Y = data$lsalary
+b = solve(t(X) %*% X) %*% (t(X) %*% Y)
+b
+```
+
+
+(b) The description statistics of the residuals
+
+**Solution:**  
+```{R}
+mean(Y-X%*%b)
+median(Y-X%*%b)
+min(Y-X%*%b)
+max(Y-X%*%b)
+```
+
+
+(c) The standard error estimates, t-values, p-values.
+
+**Solution:**  
+```{R}
+# Standard error estimates
+s = sum((Y - X %*%b)**2 / (nrow(X) - ncol(X)))
+standard_errors = sqrt(diag(s * solve(t(X)%*%(X))))
+standard_errors
+
+# t-values
+t_values = b/standard_errors
+t_values
+
+# p-values
+df = nrow(X) - ncol(X)
+p_values = 2*(1-pt(abs(t_values), df))
+p_values
+```
+
+
+(d) The residual standard error
+
+**Solution:**  
+```{R}
+residual_SE =sqrt(sum((Y-X%*%b)**2)/df)
+residual_SE
+```
+
+
+(e) The multiple R-squared, Adjusted R-squared
+
+**Solution:**  
+```{R}
+# R-squared
+SSE = sum((Y-X%*%b)**2)
+SST = sum((Y - mean(Y))**2)
+r_sqrd = 1 - (SSE/SST)
+r_sqrd
+
+# Adjusted R-squared
+adj_r_sqrd = 1 - ((SSE/df)/(SST/(n-1)))
+adj_r_sqrd
+```
+
+
+(f) The F-statistic and the p-value for the F-statistic
+
+**Solution:**  
+```{R}
+# F-statistic
+F_stat = ((r_sqrd)/(5)) / ((1 - r_sqrd) / df)
+F_stat
+
+# p-value for F-statistic
+1 -pf(F_stat, 5, df)
+```
+   
+(g) Finally, using the Wald principle conduct a joint hypothesis test that includes at least *two restrictions* on the parameters.  State the hypothesis, construct the F-statistic and p-value for your test, state the conclusion of the test.
+
+**Solution:**  
+
+(h) Confirm your results in Part (g) using the ```linearHypothesis``` from the ```AER``` library.
+
+**Solution:**  
+```{R}
+linearHypothesis(mod, ')
+```
+
+
+
+
