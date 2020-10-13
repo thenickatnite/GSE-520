@@ -25,6 +25,7 @@ X'X = \left[
 ```{R}
 beta1_hat = 0.4
 beta2_hat = 0.9
+b = matrix(c(4,0.4,0.9), nrow=3, ncol=1)
 n = 29
 e_e =520 
 X = matrix(c(29,0,0,0,50,10,0,10,80), nrow = 3, ncol=3)
@@ -46,6 +47,18 @@ CI_beta2
 (b) Test the hypothesis that the two slopes sum to 1. Compute the F-statistic and the p-value and state your conclusion from the test.
 
 **Solution:**  
+```{R}
+R = as.matrix(cbind(0,1,1))
+q = as.matrix(1)
+m = R %*% b - q
+V = solve(X)
+s = e_e/(n-3)
+F_stat = ((t(m) %*% solve(R %*% V %*% t(R)) %*% m)/s)
+F_stat
+
+# p-value for F Statistic
+1 - pf(F_stat, 1, n-3)
+```
 
 
 ### Question 2
@@ -84,11 +97,7 @@ b
 
 >**Solution:**  
 >```{R}
-mean(Y-X%*%b)
-median(Y-X%*%b)
-min(Y-X%*%b)
-max(Y-X%*%b)
-quantile(Y-X%*%b)
+summary(Y-X%*%b)
 ```
 
 
