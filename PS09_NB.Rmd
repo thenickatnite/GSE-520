@@ -21,33 +21,30 @@ X'X = \left[
 
 (a) Use these results to form confidence intervals for the coefficients on $x_1$ and $x_2$, called $\beta_1$ and $\beta_2$ respectively.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 beta1_hat = 0.4
 beta2_hat = 0.9
 b = matrix(c(4,0.4,0.9), nrow=3, ncol=1)
 n = 29
 e_e =520 
+s = e_e/(n-3)
 X = matrix(c(29,0,0,0,50,10,0,10,80), nrow = 3, ncol=3)
-SE_hat_1 = sqrt((e_e / n- 3) * solve(X[2,2]))
-SE_hat_2 = sqrt((e_e / n- 3) * solve(X[3,3]))
-
+se_betas = as.matrix(sqrt(diag(s * solve(X))))
 df = n -3
 C = 1- .05
 CV = abs(qt((1-C)/2,df))
- 
-
-CI_beta1 = beta1_hat + c(-1,1)*CV*SE_hat_1
+CI_beta1 = beta1_hat + c(-1,1)*CV*se_betas[2,1]
 CI_beta1
-CI_beta2 = beta2_hat + c(-1,1)*CV*SE_hat_2
+CI_beta2 = beta2_hat + c(-1,1)*CV*se_betas[3,1]
 CI_beta2
 ```
 
 
 (b) Test the hypothesis that the two slopes sum to 1. Compute the F-statistic and the p-value and state your conclusion from the test.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 R = as.matrix(cbind(0,1,1))
 q = as.matrix(1)
 m = R %*% b - q
@@ -55,7 +52,6 @@ V = solve(X)
 s = e_e/(n-3)
 F_stat = ((t(m) %*% solve(R %*% V %*% t(R)) %*% m)/s)
 F_stat
-
 # p-value for F Statistic
 1 - pf(F_stat, 1, n-3)
 ```
@@ -77,8 +73,8 @@ Using only linear algebra and matrices reproduce the following from this table: 
 
 (a) The coefficient estimates.
 
->**Solution:**  
->```{R}
+**Solution:**  
+```{R}
 data = data[! is.na(data$lsalary),]
 data = data[! is.na(data$LSAT),]
 data = data[! is.na(data$GPA),]
@@ -95,16 +91,16 @@ b
 
 (b) The description statistics of the residuals
 
->**Solution:**  
->```{R}
+**Solution:**  
+```{R}
 summary(Y-X%*%b)
 ```
 
 
 (c) The standard error estimates, t-values, p-values.
 
->**Solution:**  
->```{R}
+**Solution:**  
+```{R}
 # Standard error estimates
 s = sum((Y - X %*%b)**2 / (nrow(X) - ncol(X)))
 standard_errors = sqrt(diag(s * solve(t(X)%*%(X))))
@@ -121,8 +117,8 @@ p_values
 
 (d) The residual standard error
 
->**Solution:**  
->```{R}
+**Solution:**  
+```{R}
 residual_SE =sqrt(sum((Y-X%*%b)**2)/df)
 residual_SE
 ```
@@ -130,8 +126,8 @@ residual_SE
 
 (e) The multiple R-squared, Adjusted R-squared
 
->**Solution:**  
->```{R}
+**Solution:**  
+```{R}
 # R-squared
 SSE = sum((Y-X%*%b)**2)
 SST = sum((Y - mean(Y))**2)
@@ -145,8 +141,8 @@ adj_r_sqrd
 
 (f) The F-statistic and the p-value for the F-statistic
 
->**Solution:**  
->```{R}
+**Solution:**  
+```{R}
 # F-statistic
 F_stat = ((r_sqrd)/(5)) / ((1 - r_sqrd) / df)
 F_stat
@@ -156,19 +152,20 @@ F_stat
    
 (g) Finally, using the Wald principle conduct a joint hypothesis test that includes at least *two restrictions* on the parameters.  State the hypothesis, construct the F-statistic and p-value for your test, state the conclusion of the test.
 
->**Solution:**  
+**Solution:**  
 \begin{align*}
-H_0 : & \beta_1 + \beta_5 = 0 \\
- & \& \beta_4 = 0 \\
+H_0 : & \beta_1 = 0 \\
+ & \& \beta_5 = 0 \\
 \end{align*}
 
->```{R}
-R = as.matrix(cbind(0,1,0,0,1,1))
+```{R}
+R = as.matrix(cbind(0,1,0,0,1,-1))
 q = as.matrix(0)
 V = solve((t(X) %*% X))
 m = R %*% b - q
-F_stat = ((t(m) %*% solve(R %*% V %*% t(R)) %*% m)/s) / 2
+F_stat = ((t(m) %*% solve(R %*% V %*% t(R)) %*% m)/s) / (2)
 F_stat
+1 -pf(F_stat, 2, df)
 ```
 Fail to reject null.
 
@@ -178,7 +175,7 @@ Fail to reject null.
 ```{R}
 suppressMessages(library("AER"))
 mod$coefficients
-#linearHypothesis(mod, 'lsat = -rank')
+linearHypothesis(mod, c("LSAT + rank = 0", "lcost =0"))
 ```
 
 
