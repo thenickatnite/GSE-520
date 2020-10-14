@@ -73,8 +73,8 @@ Using only linear algebra and matrices reproduce the following from this table: 
 
 (a) The coefficient estimates.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 data = data[! is.na(data$lsalary),]
 data = data[! is.na(data$LSAT),]
 data = data[! is.na(data$GPA),]
@@ -91,16 +91,16 @@ b
 
 (b) The description statistics of the residuals
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 summary(Y-X%*%b)
 ```
 
 
 (c) The standard error estimates, t-values, p-values.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 # Standard error estimates
 s = sum((Y - X %*%b)**2 / (nrow(X) - ncol(X)))
 standard_errors = sqrt(diag(s * solve(t(X)%*%(X))))
@@ -117,8 +117,8 @@ p_values
 
 (d) The residual standard error
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 residual_SE =sqrt(sum((Y-X%*%b)**2)/df)
 residual_SE
 ```
@@ -126,8 +126,8 @@ residual_SE
 
 (e) The multiple R-squared, Adjusted R-squared
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 # R-squared
 SSE = sum((Y-X%*%b)**2)
 SST = sum((Y - mean(Y))**2)
@@ -141,8 +141,8 @@ adj_r_sqrd
 
 (f) The F-statistic and the p-value for the F-statistic
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 # F-statistic
 F_stat = ((r_sqrd)/(5)) / ((1 - r_sqrd) / df)
 F_stat
@@ -152,13 +152,13 @@ F_stat
    
 (g) Finally, using the Wald principle conduct a joint hypothesis test that includes at least *two restrictions* on the parameters.  State the hypothesis, construct the F-statistic and p-value for your test, state the conclusion of the test.
 
-**Solution:**  
+>**Solution:**  
 \begin{align*}
-H_0 : & \beta_1 = 0 \\
- & \& \beta_5 = 0 \\
+H_0 : & \beta_1 + \beta_5 = 0 \\
+ & \& \beta_4 = 0 \\
 \end{align*}
 
-```{R}
+>```{R}
 R = as.matrix(cbind(0,1,0,0,1,-1))
 q = as.matrix(0)
 V = solve((t(X) %*% X))
@@ -171,8 +171,8 @@ Fail to reject null.
 
 (h) Confirm your results in Part (g) using the ```linearHypothesis``` from the ```AER``` library.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 suppressMessages(library("AER"))
 mod$coefficients
 linearHypothesis(mod, c("LSAT + rank = 0", "lcost =0"))
