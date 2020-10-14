@@ -167,7 +167,7 @@ F_stat = ((t(m) %*% solve(R %*% V %*% t(R)) %*% m)/s) / (2)
 F_stat
 1 -pf(F_stat, 2, df)
 ```
-Fail to reject null.
+Fail to reject null hypothesis.
 
 (h) Confirm your results in Part (g) using the ```linearHypothesis``` from the ```AER``` library.
 
