@@ -1,0 +1,192 @@
+---
+title: 'GSE 520: Problem Set #1'
+author: 
+  - "Nick Brown"
+  - "Brendan Hoang"
+  - "Laniah Lewis"
+  - "Russell McIntosh"
+  - "Amanda Walker"
+output: html_document
+---
+
+### Question 1
+
+Suppose the government believes that if a student has someone help them fill out their FAFSA form, the student will be more likely to attend college (the FAFSA is the Free Application for Federal Student Aid).  They wish to estimate the regression
+$$ col_i = \beta_0 + \beta_1 FAFSA_i + \beta_2 income_i + \varepsilon_i$$
+Where $i$ indicates the individual, and $FAFSA_i=1$ if the student received help filling out the FAFSA and zero otherwise, and $income_i$ is the income of student $i$.  Assume the error in the model above $\varepsilon$ is homoskedastic and non-autocorrelated, with $Var(\varepsilon) = \sigma^2$
+
+The government randomly selects 300 high schools in the nation and randomly decides whether they will have a program to help students with the FAFSA.  Not all schools will receive the FAFSA program, however if a school is selected for the program, all students will receive the FAFSA support.  Let $j$ indicate high school, and $FAFSA_j=1$ if the school was assigned the program and zero otherwise.  Rather than observing individual level college decisions, you only have data on the averages of the variables for the 300 colleges.  You consider the school level regression
+$$ \overline{col}_j = \beta_1 + \beta_2 FAFSA_j + \beta_3 \overline{income}_j + \overline{\varepsilon}_j \qquad(2)$$
+Where $\overline{col}_j$ is the fraction of students at high school $j$ attending college, $\overline{income}_j$ is the average income of students at high school $j$, and $\overline{\varepsilon}_j$ is the new model error.
+
+(a) Letting $clsize_j$ denote the class size of high school $j$.  Show that even though $\varepsilon$ is homoskedastic, that the new error $\overline{\varepsilon}$ is necessarily heteroskedastic.  Find $Var(\overline{\varepsilon}_j)$, which is a function $\sigma^2$ and $clsize_j$.
+
+**Solution:**  
+
+
+(b) In Part (a) you showed that Equation (2) is heteroskedastic.  This means that if you apply least squares to estimate $\beta_2$ in Equation (2) your estimator will be unbiased, but it will not be the minimum variance linear unbiased estimator (MVLUE).  Since Equation (2) has heteroskedasticity of known form, one way to derive the MLVUE is to transform the data so that the error is homoskedastic, then apply least squares, which by the Gauss-Markov theorem guarantees MVLUE.  What could you multiple both sides of Equation (2) by that would make the error homoskedastic? (Hint: you will multiple both sides of Equation (2) by a function of $clsize_j$.)
+
+**Solution:**  
+
+
+### Question 2
+The median starting salary for new law school graduates is determined by
+$$salary = \beta_0 + \beta_1 LSAT + \beta_2 GPA + \beta_3 \ln(libvol)  + \beta_4 \ln(cost) + \beta_5 rank +\varepsilon$$
+where $LSAT$ is the median LSAT score for the graduating class, $GPA$ is the median college GPA for the class, $libvol$ is the number of volumes in the law school library, $cost$ is the annual cost of attending law school, and $rank$ is a law school ranking (with $rank=1$ being the best).
+
+(a) Using the data in ```LAWSCH85.RData```, estimate the model above.  Report your coefficients and which if any are statistically different from zero at the 5\% level (you can use the ```lm``` and ```summary``` or ```coeftest``` functions)
+
+**Solution:**  
+```{R}
+suppressMessages(library("AER"))
+suppressMessages(library("clubSandwich"))
+load('../Data/lawsch85.RData')
+mod = lm(salary~ LSAT + GPA + llibvol + lcost + rank, data = data)
+round(coeftest(mod), 4)
+```
+
+
+
+(b) Use the ```bptest``` function to do a Breusch-Pagan test of heteroskedasticity, which uses the $\Xi^2$ short-cut.  What critical value will you use for a 5\% test?  Do you reject the null hypothesis at the 5\% level. 
+
+**Solution:**  
+```{R}
+bptest(mod)
+qchisq(.95, df=5)
+```
+The critical value I will use for a 5\% test is 11.0705. Looking at the results from the Breusch-Pagan test, our BP value is 14.752. So we can reject the null hypothesis at the 95\% confidence level and say our model suffers from heteroskedasticity. 
+
+
+
+(c) Using ```vcovHC(mod, "HC1")``` Compute heteroskedastic-robust standard errors from your model in Part (a).  Do any of your major conclusions change with these different standard errors?
+
+**Solution:**  
+```{R}
+round(coeftest(mod, vcov = vcovHC(mod, "HC1")), 4)
+```
+While the standard errors changed, none of the major conclusions have changed using the different standard errors. The only difference of note is that the GPA variable no longer has a significance level of $0$ and instead has a significance level of $0.001$. So the GPA variable is slightly less significant.
+
+ 
+(d) Finally, do a Breusch-Pagan test of heteroskedasticity, using $\ln(salary)$ on the left hand side.  Do you reject this test at the 5\% significance level?
+
+**Solution:**  
+```{R}
+mod1 = lm(lsalary~ LSAT + GPA + llibvol + lcost + rank, data = data)
+bptest(mod1)
+```
+Using the same chi-squared critical value of $11.0705$, we can no longer reject the null hypothesis of homoskedasticity as the BP test value was only $9.0107$. This does not prove we have homoskedasticity, only that we cannot prove we have heteroskedasticity for this model.
+
+
+### Question 3
+Use the data in ```CORNWELL.RData``` (from Cornwell and Trumball, 1994) to estimate a model of county-level crime rates, ***using the year 1987 only***.
+
+(a) Using logarithms of all variables, estimate a model relating the crime rate to the deterrent variables $prbarr$, $prbconv$, $prbpris$, and $avgsen$.
+
+**Solution:**  
+```{R}
+load('../Data/cornwell.RData')
+data1 = data[ which(data$year==87), ]
+mod = lm(log(crmrte) ~ log(prbarr) + log(prbconv) + log(prbpris) + log(avgsen), data = data1)
+round(coeftest(mod),4)
+```
+
+
+(b) Add $\ln(crmrte)$ for 1986 as an additional explanatory variable, and comment on how the estimated parameters differ from part (a). (figuring out how to add this variable will challenge your data science skills)
+
+**Solution:**  
+```{R}
+data1$crmrte86 = data$crmrte[ which(data$year==86) ]
+mod1 = lm(log(crmrte) ~ log(prbarr) + log(prbconv) + log(prbpris) + log(avgsen) + log(crmrte86), data = data1)
+round(coeftest(mod1),4)
+```
+The $\ln(prbpris)$ coefficient was positive in the first regression, but was negative in the second one. $\ln(prbconv)$ was significant at the $0.001$ significance level in the first regression and is insignificant in the second regression. $\ln(prbarr)$ is slightly less significant in the second regression than it was in the first one.
+
+
+(c)  Add all 9 sector specific wage variables  (again in logs) to the model in part (b) and compute the F-statistic for joint significance of all of the wage variables.  Do wages appear to have an impact on the crime rate?
+
+**Solution:**  
+```{R}
+mod2 = lm(log(crmrte) ~ log(prbarr) + log(prbconv) + log(prbpris) + log(avgsen) + log(crmrte86) + log(wcon) + log(wtuc) + log(wtrd) + log(wfir) + log(wser) + log(wmfg) + log(wfed) + log(wsta) + log(wloc), data = data1)
+
+round(coeftest(mod2),4)
+
+linearHypothesis(mod2, c("log(wcon)=0", "log(wtuc)=0", "log(wtrd)=0", "log(wfir)=0", "log(wser)=0", "log(wmfg)=0", "log(wfed)=0", "log(wsta)=0", "log(wloc)=0"))
+```
+Wages appear to not have an effect on the crime rate, based on the failure to reject the null hypothesis in the F-test. 
+
+
+(d) Redo Part (c), but make the test robust to heteroskedasticity of unknown form.  Do your conclusions change?  Determine which sector wages are most responsible for your change in conclusion.
+
+**Solution:**  
+```{R}
+round(coeftest(mod2, vcov = vcovHC(mod2, "HC1")), 4)
+v = vcovHC(mod2, "HC1")
+linearHypothesis(mod2, c("log(wcon)=0", "log(wtuc)=0", "log(wtrd)=0", "log(wfir)=0", "log(wser)=0", "log(wmfg)=0", "log(wfed)=0", "log(wsta)=0", "log(wloc)=0"), vcov = v)
+```
+Using robust standard errors, we can now see our hypothesis of all the wage variables being zero can now be rejected. The sector wage that seems most responsible for this change is $wcon$, or the construction sector as it was not significant in part (c) but became significant following the use of robust standard errors. 
+
+
+### Question 4
+In Greene's textbook he has a couple of examples using data on Monet paintings.  You can read this data into R using the command  
+```
+data = read.csv(url("http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF4-1.csv"))
+```
+Use this data to estimate the following regression
+$$log(PRICE) = \beta_1 + \beta_2 \ln(AREA) + \beta_3 AspectRatio + \varepsilon$$
+Where $AREA=Width\times Height$ and $AspectRatio=Width/Height$.
+
+(a) Report your OLS estimates. State exactly the numerical interpretation for your estimate of $\beta_2$
+
+**Solution:**  
+```{R}
+data2 = read.csv(url("http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF4-1.csv"))
+data2$AREA = data2$WIDTH * data2$HEIGHT
+data2$AspectRatio = data2$WIDTH / data2$HEIGHT
+mod = lm(log(PRICE) ~ log(AREA) + AspectRatio, data = data2)
+round(coeftest(mod),4)
+```
+
+
+(b) In the 8th edition of the textbook, Greene reports three versions of the standard errors for this model, homoskedastic, heteroskedastic, and clustered standard errors. You can find this table on Canvas under the page "Greene Robust Standard Error Pages".  It is labeled Table 4.4. Using built-in R functions, re-produce all of these different standard error estimates ***exactly***.  (Hint: When using \textsf{vcovHC} and \textsf{vcovCR} you need to specify the small sample degrees of freedom adjustment.  To match Greene's HC numbers you need to use ``HC0''.  I will leave you to figure out what degrees of freedom adjustment he used for the clustered standard errors.  In practice, it does not matter which ones you use.  If your results depend heavily on degrees of freedom adjustments then you don't have very strong results.
+
+**Solution:**  
+```{R}
+round(coeftest(mod, vcov = vcovHC(mod, "HC0")),4)
+v = vcovCR(mod, data2$PICTURE, "CR1S")
+round(coeftest(mod, vcov = v),4)
+```
+
+
+### Question 4
+
+On Canvas, there is a page titled "Greene Robust Standard Error Pages".  On this page you will see some screenshots from the 8th Edition of Greene.  Example 4.6 shows a model based on the data in Cornwell and Rupert.  The results from this model are reported in Table 4.5.  ***Using only matrix algebra, replicate all of the numbers in this table (ignore the column bootstrapped standard errors)***
+
+Use the command 
+```
+data = read.csv(url("http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF8-1.csv"))
+```
+
+**Solution:**  
+```{R}
+data3 = read.csv(url("http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF8-1.csv"))
+```
+
+```{R}
+# Getting initial standard errors
+n = nrow(data3)
+Y = data3$LWAGE
+X = cbind(rep(1,n), data3$EXP, (data3$EXP)**2, data3$WKS, data3$OCC, data3$IND, data3$SOUTH, data3$SMSA, data3$MS, data3$UNION, data3$ED, data3$FEM, data3$BLK)
+b = solve(t(X) %*% X) %*% (t(X) %*% Y)
+b
+s = sum((Y- X%*%b)**2 / (nrow(X)-ncol(X)))
+standard_errors = sqrt(diag(s * solve(t(X)%*%(X))))
+standard_errors
+```
+
+
+```{R}
+# getting Huber-White robust standard errors
+df_adj = nrow(X) / (nrow(X) - ncol(X)) 
+
+# HW_standard_errors = df_adj * solve(t(X)%*%X) %*% (t(X)%*%e_sqrd%*%X) %*%solve(t(X)%*%X)
+```
