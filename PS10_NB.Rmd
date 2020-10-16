@@ -22,11 +22,19 @@ Where $\overline{col}_j$ is the fraction of students at high school $j$ attendin
 (a) Letting $clsize_j$ denote the class size of high school $j$.  Show that even though $\varepsilon$ is homoskedastic, that the new error $\overline{\varepsilon}$ is necessarily heteroskedastic.  Find $Var(\overline{\varepsilon}_j)$, which is a function $\sigma^2$ and $clsize_j$.
 
 **Solution:**  
+\begin{align*}
+Var(\varepsilon) = & E(\varepsilon_i)^2 = \sigma^2 \\
+Var(\overline{\varepsilon}_j) = & E(\varepsilon \varepsilon') = \sigma^2_i \\
+\end{align*}
+This is the difference between an error term that has homoskedasticity versus one that has heteroskedasticity. In the case of our specific model, the error term is going to be affected by the variation in class size of high schools. This can be seen as the initial $\sigma^2$ value for $Var(\varepsilon)$ multiplied by the j-th class size of high school.
+So:
+$$Var(\overline{\varepsilon}_j) = clsize_j * \sigma^2$$
 
 
 (b) In Part (a) you showed that Equation (2) is heteroskedastic.  This means that if you apply least squares to estimate $\beta_2$ in Equation (2) your estimator will be unbiased, but it will not be the minimum variance linear unbiased estimator (MVLUE).  Since Equation (2) has heteroskedasticity of known form, one way to derive the MLVUE is to transform the data so that the error is homoskedastic, then apply least squares, which by the Gauss-Markov theorem guarantees MVLUE.  What could you multiple both sides of Equation (2) by that would make the error homoskedastic? (Hint: you will multiple both sides of Equation (2) by a function of $clsize_j$.)
 
 **Solution:**  
+To make the error homoskedasctic, we simply need to multiply both sides of Equation (2) by a function of $1/clsize_j$. This would cancel out $clsize_j$'s effect on the error term. Making our estimater the MLVUE again.
 
 
 ### Question 2
