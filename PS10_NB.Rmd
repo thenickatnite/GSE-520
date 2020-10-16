@@ -186,7 +186,12 @@ standard_errors
 
 ```{R}
 # getting Huber-White robust standard errors
+mod = lm(LWAGE ~ EXP + I(EXP**2) + WKS + OCC + IND + SOUTH + SMSA + MS + UNION + ED + FEM + BLK, data = data3)
 df_adj = nrow(X) / (nrow(X) - ncol(X)) 
-
+XX = t(X)%*%X
+XXi = solve(t(X)%*%X)
+S = XXi %*% (t(X)%*%diag(mod$residuals**2)%*%X) %*% XXi
+diag(S)
+# consistenly getting the wrong estimates. Not sure why.
 # HW_standard_errors = df_adj * solve(t(X)%*%X) %*% (t(X)%*%e_sqrd%*%X) %*%solve(t(X)%*%X)
 ```
