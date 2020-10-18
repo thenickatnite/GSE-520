@@ -82,10 +82,10 @@ While the standard errors changed, none of the major conclusions have changed us
 mod1 = lm(lsalary~ LSAT + GPA + llibvol + lcost + rank, data = data)
 bptest(mod1)
 ```
-Using the same chi-squared critical value of $11.0705$, we can no longer reject the null hypothesis of homoskedasticity as the BP test value was only $9.0107$. This does not prove we have homoskedasticity, only that we cannot prove we have heteroskedasticity for this model.
+Using the same chi-squared critical value of $11.0705$, we can not reject the null hypothesis of homoskedasticity as the BP test value was only $9.0107$. This does not prove we have homoskedasticity, only that we cannot prove we have heteroskedasticity for this model.
 
 
-### Question 3
+### Question 3$
 Use the data in ```CORNWELL.RData``` (from Cornwell and Trumball, 1994) to estimate a model of county-level crime rates, ***using the year 1987 only***.
 
 (a) Using logarithms of all variables, estimate a model relating the crime rate to the deterrent variables $prbarr$, $prbconv$, $prbpris$, and $avgsen$.
@@ -194,12 +194,19 @@ standard_errors
 
 ```{R}
 # getting Huber-White robust standard errors
-mod = lm(LWAGE ~ EXP + I(EXP**2) + WKS + OCC + IND + SOUTH + SMSA + MS + UNION + ED + FEM + BLK, data = data3)
+#mod = lm(LWAGE ~ EXP + I(EXP**2) + WKS + OCC + IND + SOUTH + SMSA + MS + UNION + ED + FEM + BLK, data = data3)
 df_adj = nrow(X) / (nrow(X) - ncol(X)) 
 XX = t(X)%*%X
 XXi = solve(t(X)%*%X)
-S = XXi %*% (t(X)%*%diag(mod$residuals**2)%*%X) %*% XXi
-diag(S)
-# consistenly getting the wrong estimates. Not sure why.
-# HW_standard_errors = df_adj * solve(t(X)%*%X) %*% (t(X)%*%e_sqrd%*%X) %*%solve(t(X)%*%X)
+resid_sqrd = (Y-X%*%b)^2
+z =diag(c(resid_sqrd), nrow(X), nrow(X))
+S = XXi %*% (t(X)%*% z %*%X) %*% XXi
+HW_stardard_errors = sqrt(diag(S))
+HW_stardard_errors
+```
+
+```{R}
+# Clustered Standard Errors
+v = vcovCR(mod, data3$BLK, "CR0")
+round(coeftest(mod, vcov = v),4)
 ```
