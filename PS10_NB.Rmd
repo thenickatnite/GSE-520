@@ -194,7 +194,7 @@ standard_errors
 
 ```{R}
 # getting Huber-White robust standard errors
-#mod = lm(LWAGE ~ EXP + I(EXP**2) + WKS + OCC + IND + SOUTH + SMSA + MS + UNION + ED + FEM + BLK, data = data3)
+mod = lm(LWAGE ~ EXP + I(EXP**2) + WKS + OCC + IND + SOUTH + SMSA + MS + UNION + ED + FEM + BLK, data = data3)
 df_adj = nrow(X) / (nrow(X) - ncol(X)) 
 XX = t(X)%*%X
 XXi = solve(t(X)%*%X)
@@ -207,6 +207,6 @@ HW_stardard_errors
 
 ```{R}
 # Clustered Standard Errors
-v = vcovCR(mod, data3$BLK, "CR0")
+v = vcovCR(mod, data3$EXP, "CR0")
 round(coeftest(mod, vcov = v),4)
 ```
