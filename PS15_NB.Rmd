@@ -1,0 +1,99 @@
+---
+title: 'GSE 520: Problem Set #15'
+author: 
+  - "Nick Brown"
+  - "Nathaniel Cinnamon"
+  - "Ian Donovan"
+output: html_document
+---
+
+Housing voucher programs offer low-income individuals vouchers to help them offset the cost of housing.  One potential concern with these programs is that this may inadvertently increase the price of housing, completely undoing the financial assistance the programs were designed to offer.  The paper "Housing Vouchers and the Price of Rental Housing" uses data from 1997 to 2003 in the American Housing Survey to study this important issue.  The data is available in ```housing.RData```
+
+The data contains a mix of housing unit characteristics and city characteristics.  $lrent\_ut$ denotes the log of monthly housing rent plus utilities for the unit, $lvouch$ denotes the log of vouchers used for the unit, $linc$ denotes the log of per capita income in the city, $ltotpop$ denotes the log of population in the city, and $lvacancy$ denotes the log of vacancy rate in the city.
+
+### Question 1
+
+Explain how the presence of housing vouchers could lead to an increase in the rental price of housing in a city?
+
+**Solution:**  
+Housing vouchers effectively give people more money to spend on housing (the voucher is for some amount). Landlords could see this increase in housing budget for some, and use that information to increase their rental prices.
+
+### Question 2
+
+(a) Run a "naive" regression where we don't control for housing characteristics or $year$. Run a log-log regression of the following form:
+$$ lrent\_ut = \beta_0 + \beta_1 lvouch + \beta_2 ltotpop + \beta_3 lvacancy + \beta_4 linc$$ 
+Print the coefficients, standard errors, t-values and p-values for this regression.
+
+**Solution:**  
+```{R}
+load('/Users/NickBrown/Desktop/ECON 520/Data/housing.RData')
+```
+```{R}
+mod = lm(lrent_ut~ lvouch + ltotpop + lvacancy + linc, data = regression_data)
+summary(mod)
+```
+
+(b) Interpret $\beta_1$. Is it significant at a 5\% level? What is the p-value?
+
+**Solution:**  
+$\beta_1$ represents the change in log rent prices when log vouchers increases. Therefore a $1\%$ increase in vouchers represents a $2.5\%$ increase in rent prices. This estimate is significant at the $5\%$ level. The p-value is $3.22e-06$, very small.
+
+(c) Do the signs on any of the variables not make any sense from an economic theory perspective?
+
+**Solution:**  
+The signs all appear to make economic sense except for maybe $ltotpop$. You would expect a percent increase in total population to potentially raise rent prices (due to housing being limited) unless there was an increase in housing concurrent to the rise in population. 
+
+(d)  Consider the following: Each year the dollar value of the vouchers increases to keep up with inflation.  Similarly the price of housing increases each year along with every other good.  Would such a situation tend to upward bias or downward bias the coefficient on $lvouch$ that you estimated above.  Explain, making sure to appeal to the omitted variable bias formula.
+
+**Solution:**  
+This situation would likely put an upward bias on the $lvouch$ variable. As both rent prices increase and voucher dollar value increases over time, it would be hard to get the actual year estimate value without controlling for time. THe increasing rent prices due to inflation would possibly make the effect of vouchers seem larger than they are. We can think of a long regression accounting for time fixed effects, and this short regression. If we ran a regression where the year was the dependent variable, we could potentially see a strong relationship between year and vouchers suggesting we had previously had omitted variable bias in the first regression.
+
+(e) Re-estimate the model above adding year fixed effects.  What is the difference in the coefficient on $lvouch$ between the two models.  Was there any other meaningful changes from adding these variables to the regression?
+
+**Solution:**  
+```{r}
+mod2 = lm(lrent_ut~ lvouch + ltotpop + lvacancy + linc + factor(year), data = regression_data)
+summary(mod2)
+```
+
+
+(f) Appealing to the omitted variable bias formula that we discussed in class, show exactly the determinants of the omitted variable bias for all of the coefficient estimates when the year fixed effects are left out of the regression.
+
+**Solution:**  
+```{R}
+mod$coefficients[c("lvouch","ltotpop", "lvacancy", "linc")] - mod2$coefficients[c("lvouch","ltotpop", "lvacancy", "linc")]
+```
+The omitted variable bias from excluding the year fixed effects. Not quite sure what you're asking for on this question to be honest.
+
+(g) The variable ```smsa``` is identifier variable for the city.  Recommpute the standard errors clustering them at the city level.  Are there any estimates that where statistically different than zero at the 1% level in Part (e) that are no longer statistically significant at any conventional level?
+
+**Solution:**  
+```{R}
+suppressMessages(library("AER"))
+suppressMessages(library("clubSandwich"))
+```
+
+```{R}
+coeftest(mod2, vcov. = vcovCR(mod2, cluster = regression_data$smsa, type = "CR1"))
+```
+
+### Question 3
+
+The results in Question 2 may not reflect true causal effects because there might be unobserved housing characteristics left out of the regression that are not mean independent of the variables in the model. The variable ```control``` is a housing unit identifying number.  Use this variable to add housing unit specific fixed effects to the regression from Question 2 (with the year fixed effects).  These fixed effects will capture all unobserved housing unit characteristics that may be biasing the estimates.  Are the results from Question 2 robust to the inclusion of these fixed effects?  What are the major changes from adding the housing unit fixed effects.  Make sure to cluster the standard errors at the city level.
+
+**Solution:**  
+```{R}
+mod3 = lm(lrent_ut~ lvouch + ltotpop + lvacancy + linc + control + factor(year), data = regression_data)
+coeftest(mod3, vcov. = vcovCR(mod3, cluster = regression_data$smsa, type = "CR1"))
+```
+
+
+### Question 4 (Regression Theory)
+
+Suppose $\alpha$ and $\beta_1, ..., \beta_K$ are the intercept and slope coefficients from a regression of $Y_i$ on $X_{1i},...,X_{Ki}$. Let
+$$ \hat{Y}_i = \alpha + \sum_{k=1}^{K}\beta_k X_{ki} $$
+be the fitted values for this regression and let $e_i = Y_i - \hat{Y}_i$ be the residuals. Without using mean independence, show that $(1/n)\sum_{i=1}^n[e_i]=0$, $(1/n)\sum_{i=1}^n[X_{ki}e_i] = 0$ and $(1/n)\sum_{i=1}^n[\hat{Y}_ie_i]=0$ (Hint: use first order conditions of minimizing the residual sum of squares).
+
+**Solution: **  
+
+
