@@ -97,4 +97,12 @@ round(coeftest(mod3, vcov. = vcovHC(mod3, "HC0")), 5)
 
 $post$ and $mc2$ are still significant. $post$ is still significant at $5\%$ significance level, but no longer at the $1\%$ significance level. The estimates seem to be robust, as the variable of interest $post$ is significant in each regression, and the sign is what we would expect it to be each time.
 
+(f) Explain the issue with using non-parametric RD like we just did for the past two regressions? 
+
+**Solution:**
+Non-parametric RD allows for a trade off in the bias for an increase in variance due to the decrease in observation. However, as you make the bandwidth too large there are not enough observations to make accurate estimates. 
+
+### Question 3
+
+
 
