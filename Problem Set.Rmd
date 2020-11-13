@@ -1,0 +1,86 @@
+---
+title: 'GSE 520: Problem Set #18'
+author: 
+  - "student name"
+output: html_document
+---
+
+Governments of countries with low or declining birth rates will often offer their citizens a monetary incentive to have children. This was the case in Spain, so in 2007 the Spanish government implemented a universal child benefit in 2007. This benefit paid new mothers a one-time benefit of around $\$3,900$ almost immediately after child birth. The universal child benefit went into effect in July of 2007 and after it was announced, any mother who had given birth on or after July 1, 2007 was eligible to receive the benefit. In "The Effect of a Universal Child Benefit on Conceptions, Abortions, and Early Maternal Labor Supply", author Libertad Gonzalez uses a regression discontinuity design to see if the number of conceptions (among other things, you'll be replicating the conception estimates for this problem set) increased following the implementation of the benefit. You can find the data set for this paper in data file titled: ```births.RData```.
+
+The data set consists of estimated conceptions per month from 2000 to 2009, this is represented as the variable $n$ in the data set. The variable $log\_n$ is the log number of estimated conceptions per month. The month of conception variable $mc$, has been standardized using the July 2007 policy implementation date (so for July of 2007 $mc = 0$, August of 2007 $mc=1$, June of 2007 $mc=-1$, etc.). There are also $mc2$ and $mc3$ variables which represent the quadratic and cubic trends of the linear $mc$ variable. Another variable is the $days$ variable which represents the number of days in the month of conception. The variable of interest in the paper is the $post$ variable, a binary variable which is $1$ if the $mc$ is after July 2007 and $0$ if the $mc$ is before July 2007.
+
+### Question 1  
+
+A regression discontinuity design (RDD) is a useful method for finding causal effects using regression. In order to use a sharp RDD, what factors must your dependent variable have?
+
+**Solution:**
+
+
+### Question 2  
+
+(a) Let's start by replicating the initial regression from the aforementioned paper. You will first need to subset the data from $mc=-90$ to $mc = 29$. Your subset should consist of 120 observations. Estimate a regression of the form: 
+$$log\_n = \beta_0 + \beta_1 post + \beta_2 mc + \beta_3 mc2 + \beta_4 mc3 + \beta_5 days$$
+Print the summary of the coefficients, t-scores, and p-values (make sure you use robust standard errors). What estimates are significant?
+
+**Solution:**  
+```{R}
+load('births.RData')
+suppressMessages(library("AER"))
+subset1 = n[n$mc > -91 & n$mc < 30, ]
+mod1 = lm(log_n ~ factor(post) + mc + mc2 + mc3 + days, data = subset1)
+round(coeftest(mod1, vcov. = vcovHC(mod1, "HC0")), 5)
+```
+
+All variables are significant except for the $days$ and $mc$ variables. All the other variables are significant at the $1\%$ significance level.
+
+
+
+
+(b) Interpret the coefficient of $\beta_1$. What effect does the universal child benefit appear to have on conceptions in Spain? Does this effect make economic sense?
+
+**Solution:**  
+The estimate for $\beta_1$ is equal to $0.0498$. This implies that after the policy went into effect (and $post=1$) that the estimated conceptions increased by about $5\%$. This effect does make economic sense. You would expect those who were on the fence about getting pregnant potentially being swayed by the benefit they would receive from having the baby. There is now more of an incentive to having a child.
+
+
+(c) Let's graph the data and regression lines and see if a clear discontinuity shows itself in the graph. The lines generated will be done using the loess smoother, both for aesthetic and ease of code reasons. For this question you will need to download and attach the ```ggplot2``` package in R. Here is an example of the code you can use to plot the data: 
+```
+ggplot(first_subset (this should be whatever the name of your subset is), aes(x = mc, y = log_n, colour = factor(post))) + 
+  geom_point() + 
+  xlab("Month of Conception Before/After July 2007") + 
+  ylab("Log Number of Conceptions") + 
+  ggtitle("Estimated Number of Log Conceptions Per Month") + 
+  stat_smooth(method = loess)
+```
+Plot the graph and then interpret what you see. Is there a clear discontinuity following the policy implementation?
+
+**Solution:**  
+```{R}
+suppressMessages(library("ggplot2"))
+
+ggplot(subset1, aes(x = mc, y = log_n, colour = factor(post))) + 
+  geom_point() + 
+  xlab("Month of Conception Before/After July 2007") + 
+  ylab("Log Number of Conceptions") + 
+  ggtitle("Estimated Number of Log Conceptions Per Month") + 
+  stat_smooth(method = loess)
+```
+
+Yes. There appears to be a clear discontinuity following implementation of the policy.
+
+
+(d) A strategy to limit RD mistakes is to focus on observations near the cutoff. In the paper, the author restricts the data set multiple times and reports what happens to the estimate of the variable of interest $post$.
+
+For this next regression, repeat what you did in part (a), but remove the cubic term $mc3$ and restrict the data set from $mc=-30$ to $mc=29$. You should have 60 observations. Report on any changes in the estimates from part (a).
+
+**Solution:**
+```{R}
+subset2 = n[n$mc>-31 & n$mc<30, ]
+mod2 = lm(log_n ~ factor(post) + mc + mc2 + days, data = subset2)
+round(coeftest(mod2, vcov. = vcovHC(mod1, type = "HC0")), 5)
+```
+
+
+
+
+
+
