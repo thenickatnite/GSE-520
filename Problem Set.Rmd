@@ -18,14 +18,20 @@ A regression discontinuity design (RDD) is a useful method for finding causal ef
 
 ### Question 2  
 
-(a) Let's start by replicating the initial regression from the aforementioned paper. You will first need to subset the data from $mc=-90$ to $mc = 29$. Your subset should consist of 120 observations. Estimate a regression of the form: 
+(a) Let's start by getting summary statistics for the $log_\n$ and $post$ variables and replicating the initial regression from the aforementioned paper. You will first need to subset the data from $mc=-90$ to $mc = 29$. Your subset should consist of 120 observations. Estimate a regression of the form: 
 $$log\_n = \beta_0 + \beta_1 post + \beta_2 mc + \beta_3 mc2 + \beta_4 mc3 + \beta_5 days$$
-Print the summary of the coefficients, t-scores, and p-values (make sure you use robust standard errors). What estimates are significant?
+Print the summary statistics of $log_\n$ and $post$, as well as the summary of the coefficients, t-scores, and p-values (make sure you use robust standard errors) from the regression you ran. Anything surprising or weird with the summary statistics? What estimates are significant?
 
 **Solution:**  
 ```{R}
 load('births.RData')
 suppressMessages(library("AER"))
+# Summary statistics for log_n
+summary(n$log_n)
+# Summary statistics for post
+summary(n$post)
+
+# regression and summary
 subset1 = n[n$mc > -91 & n$mc < 30, ]
 mod1 = lm(log_n ~ factor(post) + mc + mc2 + mc3 + days, data = subset1)
 round(coeftest(mod1, vcov. = vcovHC(mod1, "HC0")), 5)
@@ -65,12 +71,12 @@ ggplot(subset1, aes(x = mc, y = log_n, colour = factor(post))) +
   stat_smooth(method = loess)
 ```
 
-Yes. There appears to be a clear discontinuity following implementation of the policy.
+Yes. There appears to be a clear discontinuity following implementation of the policy. The graph shows a jump in estimated conceptions following the policy implementation
 
 
 (d) A strategy to limit RD mistakes is to focus on observations near the cutoff. In the paper, the author restricts the data set multiple times and reports what happens to the estimate of the variable of interest $post$.
 
-For this next regression, repeat what you did in part (a), but remove the cubic term $mc3$ and restrict the data set from $mc=-30$ to $mc=29$. You should have 60 observations. Report on any changes in the estimates from part (a).
+For this next regression, repeat what you did in part (a), but remove the cubic term $mc3$ and restrict the data set from $mc=-30$ to $mc=29$. You should have 60 observations. Again, use robust standard errors. Report on any changes in the estimates from part (a).
 
 **Solution:**
 ```{R}
@@ -80,7 +86,15 @@ round(coeftest(mod2, vcov. = vcovHC(mod1, type = "HC0")), 5)
 ```
 
 
+(e) Finally, restrict the data set from $mc=-12$ to $mc=11$. Run the same regression from part (d) with robust standard errors. What are the results, any changes from part (d)? Do they seem robust as we restrict the sample size?
 
+**Solution:**
+```{R}
+subset3 = n[n$mc>-13 & n$mc<12, ]
+mod3 = lm(log_n ~ factor(post) + mc + mc2 + days, data = subset3)
+round(coeftest(mod3, vcov. = vcovHC(mod3, "HC0")), 5)
+```
 
+$post$ and $mc2$ are still significant. $post$ is still significant at $5\%$ significance level, but no longer at the $1\%$ significance level. The estimates seem to be robust, as the variable of interest $post$ is significant in each regression, and the sign is what we would expect it to be each time.
 
 
