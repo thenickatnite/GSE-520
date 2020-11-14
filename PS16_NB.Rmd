@@ -145,5 +145,6 @@ Under the null, $H \sim \chi^2[J]$, where $J$ is the degrees of freedom, which i
 d = modiv$coefficients- mod$coefficients
 var_d = vcov(modiv) - vcov(mod)
 H = t(d) %*% solve(var_d) %*% d
+H
 ```
-
+The test statistic is very close to the summary output in part (f). From this test statistic, we fail to reject the null hypothesis that our model is endogenous. This does not mean our model does not have endogeneity, but this test does not prove anything new. We are more likely to fail to reject the null hypothesis with a weak instrument due to how small the test statistics appear to be for this test, it would require a clearly exogenous variable to fail this test.
