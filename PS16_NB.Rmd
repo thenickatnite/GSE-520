@@ -56,6 +56,7 @@ $$Y = \widehat{X} \beta + \pmb \varepsilon$$
 
 **Solution:**  
 
+
 (d) In fact, it can also be shown that the $Var(b^{IV})$ can be written as 
 $$Var(b^{IV}) = \sigma^2 \left(\widehat{X}'\widehat{X}\right)^{-1}$$
 Which is the OLS variance-covariance matrix from $Y = \widehat{X} \beta + \pmb \varepsilon$.
@@ -106,7 +107,7 @@ If $educ$ is correlated with the error term, that is a failure of the mean indep
 modiv = ivreg(kids ~ educ + age + I(age^2) + black + east + northcen + west + farm + othrural + town + smcity + factor(year) | meduc + feduc + age + I(age^2) + black + east + northcen + west + farm + othrural + town + smcity + factor(year), data = data)
 coeftest(modiv)
 ```
-I did not witness a large change in the estimate of education on number of kids. The estimate is still significant, and is now slightly more negative. Not a real big change from the initial $educ$ variable and the instruments $meduc$ and $feduc$.
+I did not witness a large change in the estimate of education on number of kids. The estimate is still significant, and is now slightly more negative. Not a real big change from the initial $educ$ variable to the instruments $meduc$ and $feduc$.
 
 (e) Check to see if the instruments for $educ$ pass the weak instruments test.  Run a regression with 
     ```
