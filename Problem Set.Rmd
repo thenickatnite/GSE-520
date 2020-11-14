@@ -7,7 +7,7 @@ output: html_document
 
 Governments of countries with low or declining birth rates will often offer their citizens a monetary incentive to have children. This was the case in Spain, so in 2007 the Spanish government implemented a universal child benefit in 2007. This benefit paid new mothers a one-time benefit of around $\$3,900$ almost immediately after child birth. The universal child benefit went into effect in July of 2007 and after it was announced, any mother who had given birth on or after July 1, 2007 was eligible to receive the benefit. In "The Effect of a Universal Child Benefit on Conceptions, Abortions, and Early Maternal Labor Supply", author Libertad Gonzalez uses a regression discontinuity design to see if the number of conceptions (among other things, you'll be replicating the conception estimates for this problem set) increased following the implementation of the benefit. You can find the data set for this paper in data file titled: ```births.RData```.
 
-The data set consists of estimated conceptions per month from 2000 to 2009, this is represented as the variable $n$ in the data set. The variable $log\_n$ is the log number of estimated conceptions per month. The month of conception variable $mc$, has been standardized using the July 2007 policy implementation date (so for July of 2007 $mc = 0$, August of 2007 $mc=1$, June of 2007 $mc=-1$, etc.). There are also $mc2$ and $mc3$ variables which represent the quadratic and cubic trends of the linear $mc$ variable. Another variable is the $days$ variable which represents the number of days in the month of conception. The variable of interest in the paper is the $post$ variable, a binary variable which is $1$ if the $mc$ is after July 2007 and $0$ if the $mc$ is before July 2007.
+The data set consists of estimated conceptions per month from 2000 to 2009, this is represented as the variable $n$ in the data set. The variable $log\_n$ is the log number of estimated conceptions per month. The month of conception variable $mc$, has been standardized using the July 2007 policy implementation date (so for July of 2007 $mc=0$, August of 2007 $mc=1$, June of 2007 $mc=-1$, etc.). There are also $mc2$ and $mc3$ variables which represent the quadratic and cubic trends of the linear $mc$ variable. Another variable is the $days$ variable which represents the number of days in the month of conception. The variable of interest in the paper is the $post$ variable, a binary variable which is $1$ if the $mc$ is after July 2007 and $0$ if the $mc$ is before July 2007.
 
 ### Question 1  
 
@@ -86,7 +86,7 @@ round(coeftest(mod2, vcov. = vcovHC(mod1, type = "HC0")), 5)
 ```
 
 
-(e) Finally, restrict the data set from $mc=-12$ to $mc=11$. Run the same regression from part (d) with robust standard errors. What are the results, any changes from part (d)? Do they seem robust as we restrict the sample size?
+(e) Finally, restrict the data set from $mc=-12$ to $mc=11$. Run the same regression from part (d) with robust standard errors. What are the results, any changes from part (d)? Do our estimators seem robust as we restrict the sample size, and change the model specification?
 
 **Solution:**
 ```{R}
@@ -104,5 +104,19 @@ Non-parametric RD allows for a trade off in the bias for an increase in variance
 
 ### Question 3
 
+(a) Suppose the Spanish government instead decided to pay all prospective mothers (those trying to have children) a smaller benefit, and those who actually had children a greater benefit on top of what they had all ready been paid. What method would a researcher use to find the causal effect this policy has on estimated conceptions? What could a potential regression look like for this design?
 
+**Solution:**
+The researcher could implement a fuzzy RD design as prospective Spanish mothers are given a treatment and the treatment intensity increases at a cutoff point (actually having a child). To implement a fuzzy RD, the researcher would have to use instrumental variables. In this case, the first stage form could look like:
+$$y_i = \alpha_1 + \beta D_i + e_{1i}$$
+Where $y_i$ is log income of a mother and $D_i$ is whether they had a child. 
+The second stage equation would look like:
+$$log\_n = \alpha_2 + \lambda \hat{y_{(i)}} + e_{2i}$$
+Where $log_n$ is the log number of estimated conceptions and $\hat{y_{(i)}}$ represents the estimated log income of prospective mothers and mothers. Obviously this model could suffer from a lot of problems.
+
+
+(b) What are some prospective issues with this method and design? What could prevent the researcher from finding a causal effect?
+
+**Solution:**
+As with any other model or design that uses IV and 2SLS there are issues with large standard errors, as well as a potential weak variable.
 
