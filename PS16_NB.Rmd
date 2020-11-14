@@ -75,6 +75,7 @@ Which is the OLS variance-covariance matrix from $Y = \widehat{X} \beta + \pmb \
     Suppose that after seeing these results, a naive technician makes the following suggestion:  To estimate 2SLS, retrieve $\text{x_hat} = \widehat{X}$, then use ```lm(y ~ x_hat)``` to get the 2SLS estimates.  While the coefficients from this ```lm``` will be the 2SLS estimates, the variances and standard errors will be wrong.  Explain why these standard errors will be wrong.  In particular, explain how the $\sigma^2$ from this least squares is incorrect and how it differs from the correct estimate of $\sigma^2$ needed for the instrumental variable estimator.
 
 **Solution:**  
+The standard errors will be wrong because they won't take into account the projection matrix of $Z$. The standard errors for the naive technician will only take into account the $\sigma^2$ from the second regression, it won't account for the $\sigma^2$ from the first regression. So the $\sigma^2$ in the naive regression will not be accounting for increased variability associated with $\widehat{X}$. The naive method will under represent the variability associated with instrumental variables and the standard errors will likely be smaller.
 
 ### Question 3
 
