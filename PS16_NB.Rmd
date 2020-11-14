@@ -55,16 +55,14 @@ $$Y = \widehat{X} \beta + \pmb \varepsilon$$
 (Note: this is were 2SLS gets its name.  You run a first least squares to get $\widehat{X}$ then a second least squares of $\widehat{X}$ on $Y$)
 
 **Solution:**  
-$$b^{2SLS} = (P_z X' P_z X)^{-1} (P_z X' Y)$$
-Where $P_z X$ is the amount of variable $X$ explained by another variable $Z$ (definition of the projection matrix). This can be shown by an initial first-stage regression equation:
-$$X = \alpha Z + \varepsilon$$
-Where $\widehat{X} = P_z X$ or X multipled by the projection matrix of z. 
-
-When plugged in to the second-stage equation you get:
-$$Y = \widehat{X} \beta + \varepsilon$$
-Or:
-$$ Y = (P_z X)\beta + \varepsilon $$
-(Not really sure what you're asking for here)
+\begin{align}
+X = & Z \alpha + \varepsilon \\
+\hat{X} = & Z(Z'Z)^{-1} Z'X = P_Z X\\
+Regress\; Y\; on\; Y = \hat{X}\beta + \varepsilon \; which\; gives:\\
+b^{2SLS} = & (X' P_Z X)^{-1} X'P_Z Y\\
+= & (X' P_Z' P_Z X)^{-1}X'P_Z'Y\\
+= & (\hat{X}' \hat{X})^{-1} (\hat{X}'Y) \\
+\end{align}
 
 
 
