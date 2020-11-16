@@ -122,12 +122,12 @@ This is the equation for picking a non-parametric RD. As the bandwidth ($b$) get
 
 (a) The regressions you just replicated are an example of a sharp RD design. Sharp RD is not the only kind of regression discontinuity design, a researcher can also use a fuzzy regression discontinuity design. From what you read in the chapter, when should researchers use a fuzzy RD as opposed to a sharp RD?
 
-**Solution:**
+>**Solution:**
 A fuzzy RD is used when the cutoff point leads to a higher intensity treatment, as opposed to a sharp RD where the cutoff differentiated between the control and the treatment. In the book, the fuzzy RD was shown through exam schools in Boston where the cutoff was test scores to get into the most prestigious exam school.
 
 
 (b) When using a Fuzzy RD as compared to a Sharp RD, which regression would you expect to give you more significant estimates (estimates that are significantly different than zero) and why? Explain why one design will like be superior in generating significant estimates.
 
-**Solution:**
+>**Solution:**
 We would expect the Sharp RD to give us more significant estimates. This is because Fuzzy RD uses instrumental variables and two stage least squares regression, and that process increases the size of standard errors. Sharp RD uses straightforward OLS regression, and those standard errors will typically be smaller than any 2SLS regression standard errors.
 
