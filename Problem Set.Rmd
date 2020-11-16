@@ -16,6 +16,13 @@ A regression discontinuity design (RDD) is a powerful method for finding causal 
 >**Solution:**
 In order to use a sharp RDD, you must some sort of circumstance where there is a strict cutoff and once past that cutoff, individuals receive a treatment of some kind. Examples include drinking age laws, height requirements for rides, etc. In a sharp RDD you use this cutoff to explain some other event. In the book, that was an increase in death rate following an individual turning 21. 
 
+(b) Suppose a researcher specifies a very simple regression of the form:
+$$Y_i = \alpha + \rho D_b + \gamma b + \varepsilon_a$$
+The variable $D_b$ is a binary variable which is 1 when $b$ passes some cutoff figure and 0 otherwise. Will the estimate for $\rho$ suffer from OVB if a longer regression is specified?
+
+>**Solution:**
+No, it should not. The variable $D_b$ is specified by the running variable $b$ alone. Therefore, the estimate for $\rho$ should not suffer from any OVB.
+
 
 ### Question 2  
 
@@ -111,7 +118,7 @@ round(coeftest(mod3, vcov. = vcovHC(mod3, "HC0")), 5)
 >
 >$post$ and $mc2$ are still significant. $post$ is still significant at $5\%$ significance level, but no longer at the $1\%$ significance level. The estimates seem to be robust, as the variable of interest $post$ is significant in each regression, and the sign is what we would expect it to be each time.
 
-(f) Explain a potential issue with using non-parametric RD like we just did for the past two regressions? Use equation 4.5 from book (on p.162) to help answer this question.
+(f) Explain a potential issue with using non-parametric RD like we just did for the past two regressions? Use equation 4.5 from the book (on p.162) to help answer this question.
 
 >**Solution:**
 Non-parametric RD allows for a trade off in the bias for an increase in variance due to the decrease in number of observations. However, as you decrease the bandwidth there are not enough observations to make accurate estimates. 
