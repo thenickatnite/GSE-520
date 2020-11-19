@@ -18,7 +18,7 @@ $$x = \pi_0 + \pi_1 z + \eta$$
 
 (a) In terms for the observed variables: $y$, $x$, and $x$, unobserved variables $\varepsilon$, $\eta$, and parameters: $\beta_0$, $\beta_1$, $\pi_0$, $\pi_1$, what conditions must hold in these elements for $z$ to be a valid instrument?
 
-**Solution:**  
+>**Solution:**  
 For $z$ to be a valid instrument, the $Cov[Z, \varepsilon] = 0$ (so Z is exogenous), and the $Cov[Z, X] \neq 0$ (so Z is relevant as an instrument for X).
 
 (b) The first stage equation is $x = \pi_0 + \pi_1 z + \eta$.  Write what the mastering metrics referred to as the reduced form equation associated with this model.  Label the parameters of the reduced form $\gamma$ and show how they are a function of the structural parameters $\beta$'s and first stage parameters $\pi$'s. 
@@ -30,7 +30,7 @@ $$\gamma = \pi \beta$$.
 
 (c)  Suppose you have data on a random sample of people who applied for education scholarships and scholarship winners were chosen completely at random.  Let $y$ be log wage, $x$ years of education, and $z$ be an indicator if they were a scholarship winner.  It scholarship winners on average completed 2.4 additional years of schooling than those that did not when the scholarship, and scholarship winners had on average 20\% higher incomes compared to those that did not win scholarships.  What is the estimate of the causal effect of a year of education on wages?
 
-**Solution:**  
+>**Solution:**  
 $$\phi = 2.4$$
 $$\rho = 0.2$$
 $$\lambda = \frac{\rho}{\phi}$$
@@ -50,40 +50,39 @@ The data contains a mix of housing, population, and city-level characteristics. 
 
 (a) Run a naive regression and estimate a model with $app\_funds\_pc50$ as the treatment variable and $lnfaminc80$ as the outcome variable.  What is the relationship between urban renewal funds and family income in 1980?
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 load('/Users/NickBrown/Desktop/ECON 520/Data/Urban.Rdata')
 Test$app_funds_pc50 = (Test$app_funds_pc50)/100
 ```
-
-```{R}
+>
+>```{R}
 mod = lm(lnfaminc80 ~ app_funds_pc50, data = Test)
 summary(mod)
 ```
-The coefficient on $app\_funds\_pc50$ is negative and significant. So an increase in funds appears to lead to a decrease in 1950 family income.
+>A 1 unit increase in urban renewal funds per capita ($100) in 1950 is associated with an average decrease of 1.2% in median familly income in 1980.
 
 (b) The results in Part (a) do not reflect a casual effect because there are likely many variables that are in the error term that could be predicted by whether a city received funds, i.e., a city with a depressed economy are the one most likely to receive funds.  We can potentially address this endogeneity problem by adding a full set of pre-program control variables.  Add the variables  
 $$ pownocc_{50} + lnmedval_{50} + pdilap_{50} + poldunits_{50} + punitswoplumb_{50} + pcrowd_{50} + lnpop_{50} + \\ pnonwht_{50} + plf\_manuf_{50} + pemp_{50} + pemp_{50} + medsch_{50} + lnfaminc_{50} + pinc\_under2g_{50} $$
 Be sure to include $Census$ as a fixed effect, representing census division indicators to capture differences in demographic trends across regions. Holding all else equal, interpret the effect of $app\_funds\_pc50$. Is $app\_funds\_pc50$ significant at the 5% level? What is its p-value? (Note: variables were formatted to show subscripts)
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 mod2 = lm(lnfaminc80 ~ app_funds_pc50 + pownocc50 + lnmedval50 + pdilap50 + poldunits50 + punitswoplumb50 + pcrowd50 + lnpop50 + pnonwht50 + plf_manuf_50 + pemp50 + pemp50 + medsch50 + lnfaminc50 + pinc_under2g_50 + factor(Census), data = Test)
 summary(mod2)
 ```
-The coefficient on $app\_funds\_pc50$ is still negative, so all else equal an increase in funds would mean a decrease in family income. This estimate is not significant at the $5\%$ significance level, its p-value is $0.116$.
+>Adjusting for all other variables, a 1 unit increase in urban renewal funds per capita ($100) in 1950 is associated with an average decrease of 0.37% in median familly income in 1980. $app\_funds\_pc50$ is no longer significant at the 5% level with a p-value of 0.116.
 
 (c) Recompute the standard errors from the model in Part (b), clustering by the state level with $statefip$. Did the p-value and significance of $app_funds_pc_{50}$ change?
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 suppressMessages(library('AER'))
 suppressMessages(library('clubSandwich'))
-
 v = vcovCR(mod2, cluster = Test$statefip, type = "CR1")
 coeftest(mod2, vcov. = v)
 ```
-The p-value for $app\_funds\_pc50$ is now $0.07$ and the estimate is now significant at the $10\%$ significance level, however it is still not significant at the $5\%$ significance level.
+>The standard error on $app\_funds\_pc50$ slightly decreased from 0.00238 to 0.00207 after clustering standard errors by state level. As a result, $app\_funds\_pc50$ is statistically significant only at the 10% level with a p-value of 0.07.   
 
 (d) Looking at your results in Part (c), what is your conclusion to the effectiveness of the urban renewal proposal.  Did it help cities as intended?  Did it harm cities, or were the results neutral?
 
@@ -92,27 +91,31 @@ Looking at the estimate, we can conclude the urban renewal proposal had very lit
 
 (e) The conclusion in Part (d) may be incomplete if the model still suffers from endogeneity.  The authors of the paper argue that variation in the timing of when jurisdictions were allowed to apply for funding due to legislative hold-ups might provide exogenous variation that can be used as an instrument for the endogenous funding variable.  The variable $yrsexposure\_UR$ contains the "years of potential participation" for the city, which is the consequence of the legislative approval process.  What two conditions must be true for this variable to be considered a valid instrument?
 
-**Solution:**
-For this variable to be considered a valid instrument it must be exogenous and relevant. Meaning it cannot be correlated with the error term of the regression and must have a nonzero correlation with $app\_funds\_pc50$. 
+>**Solution:**
+\   
+1) $Cov(app\_funds\_pc50, yrsexposure\_UR) \neq 0$\           
+2) $E[\varepsilon |$ $yrsexposure\_UR] = 0$
+>
+$yrsexposure\_UR$ must be exogenous and relevant. In other words, it cannot be correlated with the error term of the regression and must have a nonzero correlation with $app\_funds\_pc50$. 
 
 (f) With the same control variables used in Part (c), now estimate the model with 2SLS using the instrument of years of potential participation in the Urban Renewal program ($yrsexposure\_UR$) for the endogenous variable urban renewal funds per capita ($app\_funds\_pc50$). Cluster the standard errors on the census division level.   
 From this, we can examine whether cities that were observationally similar in 1950 experienced different median family incomes depending on the intensity of urban renewal activity. What are the results from the 2SLS model? 
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 mod3 = ivreg(lnfaminc80 ~ app_funds_pc50 + pownocc50 + lnmedval50 + pdilap50 + poldunits50 + punitswoplumb50 + pcrowd50 + lnpop50 + pnonwht50 + plf_manuf_50 + pemp50 + pemp50 + medsch50 + lnfaminc50 + pinc_under2g_50 + factor(Census) | yrsexposure_UR + pownocc50 + lnmedval50 + pdilap50 + poldunits50 + punitswoplumb50 + pcrowd50 + lnpop50 + pnonwht50 + plf_manuf_50 + pemp50 + pemp50 + medsch50 + lnfaminc50 + pinc_under2g_50 + factor(Census), data = Test)
 v = vcovCR(mod3, cluster = Test$Census, type = "CR1")
 coeftest(mod3, vcov. = v)
 ```
-
-Now the $app\_funds\_pc50$ is significant at the $5\%$ significance level (when using the instrumental variable of $yrsexposure\_UR$). 
+>
+Now the $app\_funds\_pc50$ is significant at the $5\%$ significance level (when using the instrumental variable of $yrsexposure\_UR$). Adjusting for all other variables, a 1 unit increase in urban renewal funds per capita ($100) in 1950 is associated with an average increase of 2.4% in median familly income in 1980.
 
 (g) Conduct a Weak Instruments test. State what rejecting or failing to reject the null hypothesis means. Is $yrsexposure\_UR$ a weak instrument? Almost a weak instrument?
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 summary(mod3, diagnostics = TRUE)$diagnostics
 ```
-
+>
 The weak instruments test tells us this is a strong instrument, significant at the $1\%$ significance level. However, the Wu-Hausman test is substantially less significant and is only significant at the $10\%$ significance level. This suggests we may have a potentially weak instrument in $yrsexposure\_UR$.
 
