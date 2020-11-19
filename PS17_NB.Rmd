@@ -53,7 +53,7 @@ The data contains a mix of housing, population, and city-level characteristics. 
 **Solution:**  
 ```{R}
 load('/Users/NickBrown/Desktop/ECON 520/Data/Urban.Rdata')
-Test$app_funds_pc50 = (Test$app_funds_pc50)*100
+Test$app_funds_pc50 = (Test$app_funds_pc50)/100
 ```
 
 ```{R}
@@ -81,7 +81,7 @@ suppressMessages(library('AER'))
 suppressMessages(library('clubSandwich'))
 
 v = vcovCR(mod2, cluster = Test$statefip, type = "CR1")
-round(coeftest(mod2, vcov. = v), 7)
+coeftest(mod2, vcov. = v)
 ```
 The p-value for $app\_funds\_pc50$ is now $0.07$ and the estimate is now significant at the $10\%$ significance level, however it is still not significant at the $5\%$ significance level.
 
