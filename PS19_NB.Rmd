@@ -1,0 +1,196 @@
+---
+title: 'GSE 520: Problem Set #1'
+author: 
+  - "Ruslan Adamovics-Davtian"
+  - "Nick Brown"
+  - "David Ngo"
+output: html_document
+---
+
+### Question 1
+
+(a) Consider the simple difference in difference estimator.  Explain what the parallel trends assumption is and what are the consequences of the estimator if it is not true.
+
+**Solution:**
+Parallel trends assumption is that one case would mimic another without treatment. This is to say, if one case decreased, we would expect our estimator to decrease in the absence of treatment. If this assumption is not true, then we have no "control" so to speak, so we have no idea how effective the treatment is.
+
+
+(b) The DD estimator is 
+$$DD=[E(y|Treated, Post)-E(y|Control, Post)]-[E(y|Treated, Pre)-E(y|Control, Pre)]=$$
+Show that this value is equal to $\beta_3$ in from the linear conditional expectation function below:
+$$Y_{it}=\alpha+\beta_1Treat_i+\beta_2Post_t+\beta_3(Treat_i*Post_t)+\epsilon_{it}$$  
+
+**Solution:**  
+
+(c) Alameda county and Contra Costa county are counties in Northern California that are directly next to each other. Suppose a new tax break is occurring in Alameda County for those that purchased a Tesla in 2019, meanwhile this tax break is not occurring in Contra Costa County. We want  to see the effect of this tax break on Tesla purchases. Given the data below, solve for the difference in difference estimate and interpret the results:
+
+$$E(Teslas|Alameda County, 2019)=26,500$$
+$$E(Teslas|Contra Costa County, 2019)=18000$$  
+$$E(Teslas|Alameda County, 2018)=19,000$$  
+$$E(Teslas|Contra Costa County, 2018)=17,000$$  
+
+**Solution:**  
+$$DD = [E(Teslas|Alameda County, 2019) - E(Teslas|Contra Costa County, 2019)] - [E(Teslas|Alameda County, 2018) - E(Teslas|Contra Costa County, 2018)]$$
+```{R}
+((26500) - (18000)) - ((19000) - (17000))
+```
+Our DID estimate is 6500, we can interpret this as the tax break increased Tesla sales in Alameda County.
+
+
+(d) Suppose there are 10 countries, where $S_{(k),it}=1$ is observation $it$ belongs to state $k$ and zero otherwise.  Each country is observed for 20 years.  Let $R_{(q),it}=1$ if observation $it$ belongs to period $q$.  Finally, $treat_{it}=1$ if observation $it$ is treated and zero otherwise.  Write the difference in difference estimator in equation form assuming parallel trends, where $\delta$ is the difference in difference parameter.
+
+**Solution:**
+$$Y_{it} = \alpha + \beta_1 R_{it} + \beta_2 treat_{it} + \delta (treat * R)_{it} + \varepsilon_{it}$$
+ 
+
+(e) Consider the two difference in difference estimators:
+$$Y_{st}=\alpha+\delta_{rDD}LEGAL_{st}+\sum_{k=Alaska}^{Wyoming}\beta_kSTATE_{ks}+\sum_{j=1980}^{1983}\gamma_jYEAR_{jt}+e_{st}$$  
+$$Y_{st}=\alpha+\delta_{rDD}LEGAL_{st}+\sum_{k=Alaska}^{Wyoming}\beta_kSTATE_{ks}+\sum_{j=1980}^{1983}\gamma_jYEAR_{jt}+\sum_{k=Alaska}^{Wyoming}\theta_k(STATE_{ks}*t)+e_{st}$$  
+What assumptions are different between these two difference in difference estimators?
+
+**Solution:**
+The second equation allows for state specific trend over time with the $\theta$ estimator. So the first DID estimator is assuming there are no state specific trends over time and that all states have the same state trends over time.
+
+### Question 2
+
+```Tobacco-1.RData``` contains a household-level panel dataset from 2000 - 2008 of rural farmers in China. In 2003 the People's Insurance Company of China began offering a weather insurance policy for tobacco farmers. However, select regions in China were required by law to purchase this insurance, this is the treatment group. We are interested in estimating the effect of requiring weather insurance on total tobacco production at the household level. 
+
+(a) Calculate the average tobacco production for farmers before and after 2003 for the treatment and control groups. You can use the variable treatment to identify the treatment group and the policy2 variable to identify years after 2002 and before 2003. The variable area_tob can be used to measure the tobacco production.
+
+**Solution:**  
+```{R}
+load('/Users/NickBrown/Desktop/ECON 520/Data/Tobacco-1.RData')
+```
+
+```{R}
+# Control Averages
+avg_pre_2003_control = mean(data$area_tob[(data$treatment == 0 & data$policy2 == 0)])
+avg_post_2003_control = mean(data$area_tob[(data$treatment == 0 & data$policy2 == 1)])
+# Treatment Averages
+ave_pre_2003_treat = mean(data$area_tob[(data$treatment == 1 & data$policy2 == 0)])
+ave_post_2003_treat = mean(data$area_tob[(data$treatment == 1 & data$policy2 == 1)])
+```
+
+
+(b) Calculate the difference-in-differences estimate using the group averages you calculated in part (a).
+
+**Solution:**  
+```{R}
+DID_est = (ave_post_2003_treat - avg_post_2003_control) - (ave_pre_2003_treat - avg_pre_2003_control)
+DID_est
+```
+
+
+(c) Now use the lm function to get the difference-in-differences estimate of the effect of the insurance program on tobacco production. Cluster your standard errors using the household id variable $hhno$. How does this estimate compare to your answer in (b)? What is the benefit of using this method over the method in (b)?
+
+**Solution:**
+```{R}
+suppressMessages(library(AER))
+suppressMessages(library(clubSandwich))
+```
+
+```{R}
+mod = lm(area_tob ~ treatment + policy2 + I(treatment * policy2), data = data)
+v = vcovCR(mod, cluster = data$hhno, type = "CR1")
+coeftest(mod, vcov. = v)
+```
+
+The estimate is the same as the one calculated in (b). The benefit of using this method is seeing if our DID estimate is statistically significant (need to use clustered standard errors to achieve this due to serial correlation). 
+
+
+(d) Create a plot of average tobacco production by year for the control and treatment group. Do the slopes appear to be parallel prior to 2003?
+
+    You can use the ```sapply``` function to easily get the average values by year for the subsample
+```c_means = sapply(min(data$year):max(data$year), function(x) mean(data[data$treatment == 0 & data$year == x,]$area_tob))```
+
+**Solution:**  
+```{R}
+year_index = min(data$year):max(data$year)
+c_means = sapply(year_index, function(x) mean(data[data$treatment == 0 & data$year == x,]$area_tob))
+t_means = sapply(year_index, function(x) mean(data[data$treatment == 1 & data$year == x,]$area_tob))
+{plot(year_index, t_means, ylim = c(0,7), xlab = "Year", ylab = "Average Tobacco Production", main = "Tobacco Production by Year", type = "l", col = "blue")
+  lines(year_index, c_means, col = "orange")
+  legend('bottomright', legend = c("Treatment", "Control"), col = c('blue', 'orange'), lty =1)}
+```
+  
+The slopes appear to be relatively parallel prior to 2003, suggesting parallel trends.
+
+
+### Question 3
+
+The ```libbonds``` dataset includes county-level data regarding demographics, democratic participation, and liberty-bond purchase rates between 1908 and 1932.  This data seeks to analyze the effects of liberty-bond ownership and presidential election outcomes in 1920 and 1924.  Several factors may have influenced voting patterns, including a depreciation of the value of the bonds prior to 1920 under a Democrat president, and the subsequent appreciation after 1920 under a Republican president.  Several other factors may have influenced party preferences, including US participation in WWI, wheat price shocks, and immigration and inequality issues of the time.  Counties with above-median participation in the liberty-loan programs tended to vote for democrats at a much lower rate than below-median participation counties.  A likely consequence of this fact is that above-median participation counties tended to be from the North and West, which were predominantly Republican-voters at the time.
+
+(a) Start by creating our post and treatment variables.  For the purposes of this assignment, set the post-date to years after (but not including) 1916.  Set the treatment to participation rates above (but not equal to) the median participation rate for the 4th liberty-loan program.  Then, using the mean pre- and post-values for the treatment and control groups, estimate the differences-in-differences.  `demshare` can be used to measure the Democratic nominee's share of the ticket.  (It might help to remove na values from `particip4`!)
+
+**Solution:**
+```{R}
+suppressMessages(library(tidyverse))
+load('/Users/NickBrown/Desktop/ECON 520/Data/libbonds.RData')
+mydata = mydata[! is.na(mydata$particip4), ]
+mydata = mydata %>%
+  select(countyfipscode:date4) %>%
+  mutate(
+    post = case_when(
+      year > 1916 ~ 1,
+      TRUE ~ 0
+    )
+  )
+
+mydata = mydata %>%
+  select(countyfipscode:post) %>%
+  mutate(
+    treatment = case_when(
+      particip4 > median(particip4) ~ 1,
+      TRUE ~ 0
+    )
+  )
+```
+```{R}
+pre_treat_control = mean(mydata$demshare[(mydata$treatment == 0 & mydata$post == 0)], na.rm = TRUE)
+post_treat_control = mean(mydata$demshare[(mydata$treatment == 0 & mydata$post == 1)], na.rm = TRUE)
+pre_treat_treatment = mean(mydata$demshare[(mydata$treatment == 1 & mydata$post == 0)], na.rm = TRUE)
+post_treat_treatment = mean(mydata$demshare[(mydata$treatment == 1 & mydata$post == 1)], na.rm = TRUE)
+```
+
+(b) Use the mean values you found in part (a) to calculate the differences-in-differences estimates.  Assume the difference-in-difference estimator is unbiased.  State clearly the *ceteris paribus* effect you have just estimated.
+
+**Solution:**
+```{R}
+DID_est = (post_treat_treatment - post_treat_control) - (pre_treat_treatment - pre_treat_control)
+DID_est
+```
+Based off this estimate, increased participitation in the liberty bonds program led to a decrease in in the democratic nominee's vote share. 
+
+
+(c) Run a simple regression on the model in the form:
+$$Y_{it}=\alpha+\beta_1Treat_i+\beta_2Post_t+\beta_3(Treat_i*Post_t)+ \text{State FE} + \epsilon_{it}$$
+What was your difference-in-difference coefficient?  How does it compare to the simple DID estiamte in Part (b). (Don't forget to include fixed-effects by state)  
+
+**Solution:**
+```{R}
+suppressMessages(library(fixest))
+mod.fe = feols(demshare ~ treatment + post + I(treatment * post) | STNAME, data = mydata)
+summary(mod.fe)
+```
+The DID estimate is $-4.899$, it is very close to the estimate from part (b) of $-4.843$. 
+
+
+(d) Now let's add weights to our regression: using your regression model from (c), weight the data by `$totpop20census`.  Did your difference-in-difference coefficient change? If you are using the ```fixest``` library you can add the option ```weights=mydata$totpop20census``` to the ```feols``` command.
+
+**Solution:**
+```{R}
+weighted_mod.fe = feols(demshare ~ treatment + post + I(treatment * post) | STNAME, data = mydata, weights=mydata$totpop20census)
+summary(weighted_mod.fe)
+```
+The DID estimate changed, it is now $-6.046$ and still significant at the $1\%$ significance level.
+
+
+(e) Regressions are often more complex than we have used so far.  Living in urban areas and owning property may also be linked to liberty-bond program participation and party preferences.  Add the `majorurban` and `homeown` variables to your weighted regression.  How did this affect the treatment variable and its significance?
+
+**Solution:**
+```{R}
+weighted_mod.fe2 = feols(demshare ~ treatment + post + I(treatment * post) + majorurban + homeown | STNAME, data = mydata, weights=mydata$totpop20census)
+summary(weighted_mod.fe2)
+```
+The addition of these variables have very little effect on the treatment variable and its significance. It is now slightly more significant and the estimate changed from $3.00$ to $2.94$.
+
