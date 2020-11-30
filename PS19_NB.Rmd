@@ -74,12 +74,12 @@ The second equation allows for state specific trend over time with the $\theta$ 
 
 (a) Calculate the average tobacco production for farmers before and after 2003 for the treatment and control groups. You can use the variable treatment to identify the treatment group and the policy2 variable to identify years after 2002 and before 2003. The variable area_tob can be used to measure the tobacco production.
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 load('/Users/NickBrown/Desktop/ECON 520/Data/Tobacco-1.RData')
 ```
-
-```{R}
+>
+>```{R}
 # Control Averages
 avg_pre_2003_control = mean(data$area_tob[(data$treatment == 0 & data$policy2 == 0)])
 avg_pre_2003_control
@@ -95,8 +95,8 @@ ave_post_2003_treat
 
 (b) Calculate the difference-in-differences estimate using the group averages you calculated in part (a).
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 DID_est = (ave_post_2003_treat - avg_post_2003_control) - (ave_pre_2003_treat - avg_pre_2003_control)
 DID_est
 ```
@@ -104,19 +104,19 @@ DID_est
 
 (c) Now use the lm function to get the difference-in-differences estimate of the effect of the insurance program on tobacco production. Cluster your standard errors using the household id variable $hhno$. How does this estimate compare to your answer in (b)? What is the benefit of using this method over the method in (b)?
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 suppressMessages(library(AER))
 suppressMessages(library(clubSandwich))
 ```
 
-```{R}
+>```{R}
 mod = lm(area_tob ~ treatment + policy2 + I(treatment * policy2), data = data)
 v = vcovCR(mod, cluster = data$hhno, type = "CR1")
 coeftest(mod, vcov. = v)
 ```
-
-The estimate is the same as the one calculated in (b). The benefit of using this method is seeing if our DID estimate is statistically significant (need to use clustered standard errors to achieve this due to serial correlation). 
+>
+The estimate is the same as the one calculated in (b). The benefit of using this method is seeing if our DID estimate is statistically significant (need to use clustered standard errors to achieve this due to serial correlation). Going along with the tests for significance, this method generates the standard errors.
 
 
 (d) Create a plot of average tobacco production by year for the control and treatment group. Do the slopes appear to be parallel prior to 2003?
@@ -124,8 +124,8 @@ The estimate is the same as the one calculated in (b). The benefit of using this
     You can use the ```sapply``` function to easily get the average values by year for the subsample
 ```c_means = sapply(min(data$year):max(data$year), function(x) mean(data[data$treatment == 0 & data$year == x,]$area_tob))```
 
-**Solution:**  
-```{R}
+>**Solution:**  
+>```{R}
 year_index = min(data$year):max(data$year)
 c_means = sapply(year_index, function(x) mean(data[data$treatment == 0 & data$year == x,]$area_tob))
 t_means = sapply(year_index, function(x) mean(data[data$treatment == 1 & data$year == x,]$area_tob))
@@ -133,8 +133,8 @@ t_means = sapply(year_index, function(x) mean(data[data$treatment == 1 & data$ye
   lines(year_index, c_means, col = "orange")
   legend('bottomright', legend = c("Treatment", "Control"), col = c('blue', 'orange'), lty =1)}
 ```
-  
-The slopes appear to be relatively parallel prior to 2003, suggesting parallel trends.
+> 
+The slopes appear to be relatively parallel prior to 2003, suggesting parallel trends. In 2002 there is a relative increase in the treatment group, but otherwise they look parallel.
 
 
 ### Question 3
@@ -143,8 +143,8 @@ The ```libbonds``` dataset includes county-level data regarding demographics, de
 
 (a) Start by creating our post and treatment variables.  For the purposes of this assignment, set the post-date to years after (but not including) 1916.  Set the treatment to participation rates above (but not equal to) the median participation rate for the 4th liberty-loan program.  Then, using the mean pre- and post-values for the treatment and control groups, estimate the differences-in-differences.  `demshare` can be used to measure the Democratic nominee's share of the ticket.  (It might help to remove na values from `particip4`!)
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 suppressMessages(library(tidyverse))
 load('/Users/NickBrown/Desktop/ECON 520/Data/libbonds.RData')
 mydata = mydata[! is.na(mydata$particip4), ]
@@ -156,7 +156,6 @@ mydata = mydata %>%
       TRUE ~ 0
     )
   )
-
 mydata = mydata %>%
   select(countyfipscode:post) %>%
   mutate(
@@ -166,52 +165,58 @@ mydata = mydata %>%
     )
   )
 ```
-```{R}
+>```{R}
+# Control means
 pre_treat_control = mean(mydata$demshare[(mydata$treatment == 0 & mydata$post == 0)], na.rm = TRUE)
+pre_treat_control
 post_treat_control = mean(mydata$demshare[(mydata$treatment == 0 & mydata$post == 1)], na.rm = TRUE)
+post_treat_control
+# Treatment means
 pre_treat_treatment = mean(mydata$demshare[(mydata$treatment == 1 & mydata$post == 0)], na.rm = TRUE)
+pre_treat_treatment
 post_treat_treatment = mean(mydata$demshare[(mydata$treatment == 1 & mydata$post == 1)], na.rm = TRUE)
+post_treat_treatment
 ```
 
 (b) Use the mean values you found in part (a) to calculate the differences-in-differences estimates.  Assume the difference-in-difference estimator is unbiased.  State clearly the *ceteris paribus* effect you have just estimated.
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 DID_est = (post_treat_treatment - post_treat_control) - (pre_treat_treatment - pre_treat_control)
 DID_est
 ```
-Based off this estimate, increased participitation in the liberty bonds program led to a decrease in in the democratic nominee's vote share. 
+>Based off this estimate, increased participation in the liberty bonds program led to a decrease in in the democratic nominee's vote share. All else equal, the treatment led to a decrease in democratic vote share.
 
 
 (c) Run a simple regression on the model in the form:
 $$Y_{it}=\alpha+\beta_1Treat_i+\beta_2Post_t+\beta_3(Treat_i*Post_t)+ \text{State FE} + \epsilon_{it}$$
 What was your difference-in-difference coefficient?  How does it compare to the simple DID estiamte in Part (b). (Don't forget to include fixed-effects by state)  
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 suppressMessages(library(fixest))
 mod.fe = feols(demshare ~ treatment + post + I(treatment * post) | STNAME, data = mydata)
 summary(mod.fe)
 ```
-The DID estimate is $-4.899$, it is very close to the estimate from part (b) of $-4.843$. 
+>The DID estimate is $-4.899$, it is very close to the estimate from part (b) of $-4.843$. 
 
 
 (d) Now let's add weights to our regression: using your regression model from (c), weight the data by `$totpop20census`.  Did your difference-in-difference coefficient change? If you are using the ```fixest``` library you can add the option ```weights=mydata$totpop20census``` to the ```feols``` command.
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 weighted_mod.fe = feols(demshare ~ treatment + post + I(treatment * post) | STNAME, data = mydata, weights=mydata$totpop20census)
 summary(weighted_mod.fe)
 ```
-The DID estimate changed, it is now $-6.046$ and still significant at the $1\%$ significance level.
+>The DID estimate changed, it is now $-6.046$ and still significant at the $1\%$ significance level.
 
 
 (e) Regressions are often more complex than we have used so far.  Living in urban areas and owning property may also be linked to liberty-bond program participation and party preferences.  Add the `majorurban` and `homeown` variables to your weighted regression.  How did this affect the treatment variable and its significance?
 
-**Solution:**
-```{R}
+>**Solution:**
+>```{R}
 weighted_mod.fe2 = feols(demshare ~ treatment + post + I(treatment * post) + majorurban + homeown | STNAME, data = mydata, weights=mydata$totpop20census)
 summary(weighted_mod.fe2)
 ```
-The addition of these variables have very little effect on the treatment variable and its significance. It is now slightly more significant and the estimate changed from $3.00$ to $2.94$.
+>The addition of these variables have very little effect on the treatment variable and its significance. It is now slightly more significant and the estimate changed from $3.00$ to $2.94$.
 
